@@ -3,390 +3,114 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width,initial-scale=1" />
-  <title>Line Graph Maker — Single File</title>
+  <title>Simple Line Graph Maker</title>
   <style>
-    /* Minimal, modern styling (no external libs). Clean UI, responsive. */
-    :root{
-      --bg:#0f1724; --card:#0b1220; --muted:#9aa6b2; --accent:#6ee7b7; --glass:rgba(255,255,255,0.03);
-      --gap:12px; --radius:12px; --mono: ui-monospace, SFMono-Regular, Menlo, Monaco, 'Roboto Mono', monospace;
-    }
-    *{box-sizing:border-box}
-    html,body{height:100%;margin:0;font-family:Inter, ui-sans-serif, system-ui, -apple-system, 'Segoe UI', Roboto, 'Helvetica Neue', Arial;color:#e6eef6;background:linear-gradient(180deg,var(--bg),#071026);}
-    .wrap{max-width:1100px;margin:28px auto;padding:20px;display:grid;grid-template-columns:360px 1fr;gap:20px}
-
-    /* Left control panel */
-    .panel{background:linear-gradient(180deg,var(--card),#071026);padding:16px;border-radius:var(--radius);box-shadow:0 6px 24px rgba(2,6,23,0.6);min-height:420px}
-    h1{font-size:18px;margin:0 0 8px}
-    .muted{color:var(--muted);font-size:13px}
-
-    label{display:block;margin-top:10px;font-size:13px;color:var(--muted)}
-    input[type=text], input[type=file], .small-input{width:100%;padding:8px;border-radius:8px;border:1px solid rgba(255,255,255,0.04);background:transparent;color:inherit}
-    .row{display:flex;gap:8px;align-items:center}
-    button{background:linear-gradient(90deg,var(--accent),#4fb6ff);border:0;padding:8px 12px;border-radius:10px;color:#04211a;font-weight:600;cursor:pointer}
-    button.ghost{background:transparent;border:1px solid rgba(255,255,255,0.06);color:var(--muted)}
-    .series-list{margin-top:12px;display:flex;flex-direction:column;gap:8px}
-    .series-card{display:flex;gap:8px;align-items:center;padding:8px;border-radius:10px;background:var(--glass);border:1px solid rgba(255,255,255,0.02)}
-    .color-swatch{width:18px;height:18px;border-radius:6px;border:1px solid rgba(255,255,255,0.06)}
-    .flex{display:flex;gap:8px;align-items:center}
-    .legend{display:flex;gap:8px;flex-wrap:wrap;margin-top:10px}
-
-    /* Right area: canvas + controls */
-    .card{background:linear-gradient(180deg, rgba(255,255,255,0.02), rgba(255,255,255,0.01));padding:12px;border-radius:14px;min-height:420px}
-    .canvas-wrap{position:relative;border-radius:10px;overflow:hidden;background:linear-gradient(180deg,#071428,#021226);height:520px}
-    canvas{display:block;width:100%;height:100%;}
-    .overlay-ui{position:absolute;right:10px;top:10px;background:rgba(2,6,23,0.5);padding:8px;border-radius:10px;border:1px solid rgba(255,255,255,0.03)}
-    .hint{font-size:12px;color:var(--muted);margin-top:8px}
-    .toolbar{display:flex;gap:8px;align-items:center}
-    .range{display:flex;gap:6px;align-items:center}
-    .footer-controls{display:flex;gap:8px;margin-top:12px}
-
-    /* Responsive */
-    @media (max-width:1000px){
-      .wrap{grid-template-columns:1fr;max-width:760px}
-      .canvas-wrap{height:420px}
-    }
-    /* small touch-friendly tweaks */
-    input[type=range]{width:120px}
-    .small{font-size:12px;padding:6px}
-    .mono{font-family:var(--mono);font-size:13px}
-    .note{font-size:12px;color:var(--muted)}
+    body { font-family: Arial, sans-serif; background: #0f1724; color: #e6eef6; margin: 0; padding: 20px; }
+    h1 { text-align: center; margin-bottom: 20px; }
+    .container { max-width: 900px; margin: auto; background: #1b2432; padding: 20px; border-radius: 10px; }
+    canvas { width: 100%; height: 400px; background: #071428; border-radius: 8px; }
+    .controls { margin-top: 20px; display: flex; flex-direction: column; gap: 10px; }
+    label { font-size: 14px; }
+    input, textarea, button { padding: 8px; border: none; border-radius: 6px; }
+    input, textarea { width: 100%; background: #0f1724; color: #e6eef6; }
+    button { background: #6ee7b7; color: #04211a; font-weight: bold; cursor: pointer; }
+    button:hover { opacity: 0.8; }
   </style>
 </head>
 <body>
-  <div class="wrap">
-    <aside class="panel">
-      <h1>Line Graph Maker</h1>
-      <div class="muted">Create polished line charts — CSV upload, multiple series, pan/zoom, export PNG</div>
+  <div class="container">
+    <h1>Simple Line Graph Maker</h1>
+    <canvas id="graph"></canvas>
 
-      <label>Upload CSV (x,y columns or header row)</label>
-      <input id="csvFile" type="file" accept="text/csv" />
-      <div class="hint">CSV must have two or more columns. First column is treated as X by default.</div>
+    <div class="controls">
+      <label>Horizontal (X) Values (comma separated)</label>
+      <input type="text" id="xValues" placeholder="e.g. 1, 2, 3, 4" />
 
-      <label style="margin-top:12px">Quick data (paste CSV)</label>
-      <textarea id="csvText" rows="4" style="width:100%;padding:8px;border-radius:8px;background:transparent;color:inherit;border:1px solid rgba(255,255,255,0.04);resize:vertical" placeholder="x,y\n0,5\n1,8\n2,3"></textarea>
-      <div style="display:flex;gap:8px;margin-top:8px"><button id="loadText">Load</button><button class="ghost" id="clear">Clear</button></div>
+      <label>Vertical (Y) Values (comma separated)</label>
+      <input type="text" id="yValues" placeholder="e.g. 5, 8, 6, 10" />
 
-      <label style="margin-top:12px">Add Series Manually</label>
-      <div class="row"><input id="seriesName" class="small-input" type="text" placeholder="Series name (e.g. Sales)"/><input id="seriesColor" type="color" value="#6ee7b7" style="width:48px;padding:3px;border-radius:8px"/></div>
-      <div style="display:flex;gap:8px;margin-top:8px"><button id="addSeries">Add Series</button><button id="addSample" class="ghost">Add Sample</button></div>
+      <label>Line Color</label>
+      <input type="color" id="lineColor" value="#6ee7b7" />
 
-      <div class="series-list" id="seriesList"></div>
-
-      <div style="margin-top:12px;display:flex;flex-direction:column;gap:6px">
-        <label class="row"><input id="showPoints" type="checkbox" checked style="margin-right:8px"/> Show points</label>
-        <label class="row"><input id="smoothing" type="checkbox" style="margin-right:8px"/> Smooth lines (bezier)</label>
-        <label class="row"><input id="grid" type="checkbox" checked style="margin-right:8px"/> Show grid</label>
-      </div>
-
-      <div class="footer-controls">
-        <button id="exportPNG">Export PNG</button>
-        <button id="downloadCSV" class="ghost">Download CSV</button>
-      </div>
-
-      <div style="margin-top:12px" class="note">Controls: Drag to pan, mouse wheel / pinch to zoom, hover for tooltip.</div>
-    </aside>
-
-    <main class="card">
-      <div class="canvas-wrap" id="canvasWrap">
-        <canvas id="chartCanvas"></canvas>
-        <div class="overlay-ui" id="overlay">
-          <div class="toolbar">
-            <div class="range mono">Zoom: <span id="zoomVal">1x</span></div>
-            <div style="width:10px"></div>
-            <button id="reset" class="ghost small">Reset</button>
-          </div>
-          <div class="legend" id="legend"></div>
-        </div>
-        <div id="tooltip" style="position:absolute;pointer-events:none;display:none;padding:8px;border-radius:8px;background:rgba(2,6,23,0.9);border:1px solid rgba(255,255,255,0.04);font-size:13px;color:#eafaf0"></div>
-      </div>
-    </main>
+      <button id="draw">Draw Graph</button>
+      <button id="clear">Clear Graph</button>
+    </div>
   </div>
 
   <script>
-  // Single-file interactive line chart maker
-  // Features: multiple series, CSV parsing, pan/zoom, tooltip, export PNG, download CSV
-
-  (function(){
-    // Utilities
-    const qs = s => document.querySelector(s);
-    const qsa = s => Array.from(document.querySelectorAll(s));
-    const canvas = qs('#chartCanvas');
+    const canvas = document.getElementById('graph');
     const ctx = canvas.getContext('2d');
-    const overlay = qs('#overlay');
-    const legendEl = qs('#legend');
-    const tooltip = qs('#tooltip');
-    const cvsWrap = qs('#canvasWrap');
 
-    // State
-    let series = []; // {id,name,color,points:[{x,y}],visible}
-    let view = {tx:0,ty:0,scale:1}; // transform, scale where 1 = default
-    let dragging = false, last = null;
-    let showPoints = true, smoothing=false, showGrid=true;
-
-    // Canvas sizing for crisp rendering
-    function resize(){
-      const rect = cvsWrap.getBoundingClientRect();
-      const dpr = Math.min(window.devicePixelRatio || 1, 2);
-      canvas.width = Math.floor(rect.width * dpr);
-      canvas.height = Math.floor(rect.height * dpr);
-      canvas.style.width = rect.width + 'px';
-      canvas.style.height = rect.height + 'px';
-      ctx.setTransform(dpr,0,0,dpr,0,0);
-      draw();
-    }
-    window.addEventListener('resize', resize);
-
-    // Example sample series
-    function addSample(){
-      const id = 's' + Date.now();
-      const name = 'Sample '+(series.length+1);
-      const color = '#'+Math.floor(Math.random()*16777215).toString(16).padStart(6,'0');
-      const pts = [];
-      for(let i=0;i<12;i++){ pts.push({x:i, y: Math.round(4+Math.random()*16)}); }
-      series.push({id,name,color,points:pts,visible:true});
-      rebuildUI(); draw();
+    function resizeCanvas() {
+      const dpr = window.devicePixelRatio || 1;
+      const rect = canvas.getBoundingClientRect();
+      canvas.width = rect.width * dpr;
+      canvas.height = rect.height * dpr;
+      ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
     }
 
-    // Add empty series
-    function addSeries(name,color){
-      const id = 's' + Date.now();
-      series.push({id,name: name||'Series '+(series.length+1), color: color||'#6ee7b7', points: [], visible:true});
-      rebuildUI(); draw();
-    }
+    window.addEventListener('resize', resizeCanvas);
+    resizeCanvas();
 
-    // CSV parsing (simple) — supports header or plain numbers
-    function parseCSV(text){
-      const lines = text.trim().split(/\r?\n/).map(l=>l.trim()).filter(Boolean);
-      if(lines.length===0) return [];
-      const rows = lines.map(l=>l.split(',').map(s=>s.trim()));
-      // If header: detect non-numeric first row
-      let start=0; if(rows[0].some(v=>isNaN(Number(v)))) start=1;
-      // produce array of columns
-      const cols = rows.slice(start).map(r=>r.map(v=>Number(v)));
-      // transpose
-      const trans = cols.map(r=>r); // already rows
-      return trans.map(r=>({x:r[0], y:r[1]}));
-    }
+    function drawGraph(xVals, yVals, color) {
+      ctx.clearRect(0, 0, canvas.width, canvas.height);
+      const w = canvas.width, h = canvas.height;
+      const pad = 40;
 
-    // Load CSV file
-    qs('#csvFile').addEventListener('change', e=>{
-      const f = e.target.files[0]; if(!f) return;
-      const reader = new FileReader();
-      reader.onload = ev => {
-        try{
-          const pts = parseCSV(ev.target.result);
-          // if we have at least one series, add as new series, else create
-          if(series.length===0) series.push({id:'s0',name:'Series 1',color:'#6ee7b7',points:pts,visible:true});
-          else series.push({id:'s'+Date.now(),name:'Series '+(series.length+1),color:'#'+Math.floor(Math.random()*16777215).toString(16).padStart(6,'0'),points:pts,visible:true});
-          rebuildUI(); draw();
-        }catch(err){alert('Failed to parse CSV: '+err.message)}
-      };
-      reader.readAsText(f);
-      e.target.value='';
-    });
+      const xmin = Math.min(...xVals), xmax = Math.max(...xVals);
+      const ymin = Math.min(...yVals), ymax = Math.max(...yVals);
 
-    // Load CSV text area
-    qs('#loadText').addEventListener('click', ()=>{
-      const text = qs('#csvText').value;
-      if(!text.trim()){alert('Paste CSV text first');return}
-      try{
-        const pts = parseCSV(text);
-        series.push({id:'s'+Date.now(),name:'Series '+(series.length+1),color:'#'+Math.floor(Math.random()*16777215).toString(16).padStart(6,'0'),points:pts,visible:true});
-        qs('#csvText').value='';
-        rebuildUI(); draw();
-      }catch(err){alert('Failed to parse CSV: '+err.message)}
-    });
-
-    qs('#clear').addEventListener('click', ()=>{ series=[]; rebuildUI(); draw(); });
-    qs('#addSample').addEventListener('click', addSample);
-    qs('#addSeries').addEventListener('click', ()=>{ addSeries(qs('#seriesName').value, qs('#seriesColor').value); qs('#seriesName').value=''; });
-
-    // Series UI
-    function rebuildUI(){
-      legendEl.innerHTML='';
-      const container = qs('#seriesList'); container.innerHTML='';
-      series.forEach(s=>{
-        // left panel card
-        const card = document.createElement('div'); card.className='series-card';
-        const sw = document.createElement('div'); sw.className='color-swatch'; sw.style.background = s.color;
-        const name = document.createElement('div'); name.textContent = s.name; name.style.flex='1';
-        const vis = document.createElement('input'); vis.type='checkbox'; vis.checked = s.visible; vis.title='Toggle visibility';
-        vis.addEventListener('change', ()=>{ s.visible = vis.checked; draw(); });
-        const del = document.createElement('button'); del.className='ghost small'; del.textContent='Delete'; del.addEventListener('click', ()=>{ series = series.filter(x=>x!==s); rebuildUI(); draw(); });
-        const edit = document.createElement('button'); edit.className='small'; edit.textContent='Edit'; edit.addEventListener('click', ()=>{ editSeries(s); });
-        card.append(sw,name,vis,edit,del);
-        container.appendChild(card);
-
-        // legend item
-        const lg = document.createElement('div'); lg.style.display='flex'; lg.style.alignItems='center'; lg.style.gap='8px';
-        const lsw = document.createElement('div'); lsw.style.width='14px'; lsw.style.height='14px'; lsw.style.borderRadius='4px'; lsw.style.background = s.color; lsw.title = s.name;
-        const ltxt = document.createElement('div'); ltxt.textContent = s.name; ltxt.style.fontSize='13px'; ltxt.style.color='var(--muted)';
-        lg.append(lsw,ltxt);
-        legendEl.appendChild(lg);
-      });
-    }
-
-    // Simple edit modal (browser prompt for brevity)
-    function editSeries(s){
-      const name = prompt('Series name:', s.name) || s.name;
-      const color = prompt('Hex color (e.g. #ff3344):', s.color) || s.color;
-      s.name = name; s.color = color;
-      rebuildUI(); draw();
-    }
-
-    // Drawing helpers
-    function worldBounds(){
-      // Find global x/y min/max across visible series
-      let xs = [], ys = [];
-      series.forEach(s=>{ if(!s.visible) return; s.points.forEach(p=>{ if(isFinite(p.x)&&isFinite(p.y)){ xs.push(p.x); ys.push(p.y); } }); });
-      if(xs.length===0) return {xmin:0,xmax:10,ymin:0,ymax:10};
-      let xmin = Math.min(...xs), xmax = Math.max(...xs);
-      let ymin = Math.min(...ys), ymax = Math.max(...ys);
-      if(xmin===xmax){ xmin -= 0.5; xmax += 0.5; }
-      if(ymin===ymax){ ymin -= 0.5; ymax += 0.5; }
-      return {xmin,xmax,ymin,ymax};
-    }
-
-    function draw(){
-      const rect = cvsWrap.getBoundingClientRect();
-      ctx.clearRect(0,0,rect.width,rect.height);
-      // padding for axes
-      const pad = {l:60,r:20,t:24,b:44};
-      const w = rect.width, h = rect.height;
-      // determine world bounds and map with view transform
-      const wb = worldBounds();
-
-      // apply scale about center
-      const scale = view.scale;
-      const tx = view.tx, ty = view.ty;
-
-      // world to screen mapping
-      function wx(x){ return pad.l + ((x - wb.xmin) / (wb.xmax - wb.xmin)) * (w - pad.l - pad.r); }
-      function wy(y){ return h - pad.b - ((y - wb.ymin) / (wb.ymax - wb.ymin)) * (h - pad.t - pad.b); }
+      const wx = x => pad + ((x - xmin) / (xmax - xmin)) * (w - 2 * pad);
+      const wy = y => h - pad - ((y - ymin) / (ymax - ymin)) * (h - 2 * pad);
 
       // grid
-      if(showGrid){
-        ctx.save(); ctx.globalAlpha=0.9; ctx.strokeStyle='rgba(255,255,255,0.03)'; ctx.lineWidth=1;
-        // vertical ticks
-        const xticks = 6; for(let i=0;i<=xticks;i++){ const x = wb.xmin + (wb.xmax - wb.xmin) * (i/xticks); const sx = wx(x); ctx.beginPath(); ctx.moveTo(sx, pad.t); ctx.lineTo(sx, h - pad.b); ctx.stroke(); }
-        const yticks = 6; for(let j=0;j<=yticks;j++){ const y = wb.ymin + (wb.ymax - wb.ymin) * (j/yticks); const sy = wy(y); ctx.beginPath(); ctx.moveTo(pad.l, sy); ctx.lineTo(w - pad.r, sy); ctx.stroke(); }
-        ctx.restore();
+      ctx.strokeStyle = 'rgba(255,255,255,0.1)';
+      ctx.lineWidth = 1;
+      for (let i = 0; i <= 5; i++) {
+        const y = pad + i * (h - 2 * pad) / 5;
+        ctx.beginPath();
+        ctx.moveTo(pad, y);
+        ctx.lineTo(w - pad, y);
+        ctx.stroke();
       }
 
-      // axes
-      ctx.save(); ctx.strokeStyle='rgba(255,255,255,0.08)'; ctx.fillStyle='var(--muted)'; ctx.lineWidth=1.2; ctx.font='12px '+getComputedStyle(document.body).fontFamily;
-      // y axis
-      ctx.beginPath(); ctx.moveTo(pad.l, pad.t-6); ctx.lineTo(pad.l, h - pad.b+6); ctx.stroke();
-      // x axis
-      ctx.beginPath(); ctx.moveTo(pad.l-6, h - pad.b); ctx.lineTo(w - pad.r+6, h - pad.b); ctx.stroke();
+      // line
+      ctx.strokeStyle = color;
+      ctx.lineWidth = 2;
+      ctx.beginPath();
+      ctx.moveTo(wx(xVals[0]), wy(yVals[0]));
+      for (let i = 1; i < xVals.length; i++) ctx.lineTo(wx(xVals[i]), wy(yVals[i]));
+      ctx.stroke();
 
-      // ticks and labels
-      ctx.fillStyle='rgba(255,255,255,0.7)';
-      const xtickCount = 6; for(let i=0;i<=xtickCount;i++){ const x = wb.xmin + (wb.xmax - wb.xmin)*(i/xtickCount); const sx = wx(x); ctx.fillText((+x.toFixed(2)), sx-10, h - pad.b + 16); }
-      const ytickCount = 6; for(let j=0;j<=ytickCount;j++){ const y = wb.ymin + (wb.ymax - wb.ymin)*(j/ytickCount); const sy = wy(y); ctx.fillText((+y.toFixed(2)), 6, sy+4); }
-      ctx.restore();
-
-      // draw lines for each series
-      series.forEach(s=>{
-        if(!s.visible) return;
-        const pts = s.points.filter(p=>isFinite(p.x) && isFinite(p.y)).sort((a,b)=>a.x-b.x);
-        if(pts.length===0) return;
-        ctx.save(); ctx.lineWidth=2.2; ctx.strokeStyle = s.color; ctx.fillStyle = s.color; ctx.beginPath();
-        if(smoothing && pts.length>1){
-          // simple bezier smoothing
-          ctx.moveTo(wx(pts[0].x), wy(pts[0].y));
-          for(let i=1;i<pts.length;i++){
-            const p0 = pts[i-1], p1 = pts[i];
-            const cx = (wx(p0.x)+wx(p1.x))/2; const cy = (wy(p0.y)+wy(p1.y))/2;
-            ctx.quadraticCurveTo(wx(p0.x), wy(p0.y), cx, cy);
-          }
-        } else {
-          ctx.moveTo(wx(pts[0].x), wy(pts[0].y));
-          for(let i=1;i<pts.length;i++) ctx.lineTo(wx(pts[i].x), wy(pts[i].y));
-        }
-        ctx.stroke();
-        if(showPoints){
-          ctx.globalCompositeOperation = 'source-over';
-          for(const p of pts){ ctx.beginPath(); ctx.arc(wx(p.x), wy(p.y), 3.2, 0, Math.PI*2); ctx.fill(); }
-        }
-        ctx.restore();
-      });
-
-      // update zoom label
-      qs('#zoomVal').textContent = view.scale.toFixed(2)+'x';
+      // points
+      ctx.fillStyle = color;
+      for (let i = 0; i < xVals.length; i++) {
+        ctx.beginPath();
+        ctx.arc(wx(xVals[i]), wy(yVals[i]), 4, 0, Math.PI * 2);
+        ctx.fill();
+      }
     }
 
-    // Interaction: pan (drag), zoom (wheel)
-    canvas.addEventListener('mousedown', e=>{ dragging=true; last = {x:e.clientX,y:e.clientY}; canvas.style.cursor='grabbing'; });
-    window.addEventListener('mouseup', ()=>{ dragging=false; last=null; canvas.style.cursor='default'; });
-    window.addEventListener('mousemove', e=>{
-      if(dragging && last){ const dx = e.clientX - last.x; const dy = e.clientY - last.y; last = {x:e.clientX,y:e.clientY}; view.tx += dx; view.ty += dy; draw(); }
-      // tooltip logic: find nearest point in screen space
-      const rect = canvas.getBoundingClientRect(); const mx = e.clientX - rect.left, my = e.clientY - rect.top;
-      let nearest = null, nd = Infinity;
-      // compute mapping again
-      const wb = worldBounds(); const pad = {l:60,r:20,t:24,b:44};
-      function wx(x){ return pad.l + ((x - wb.xmin) / (wb.xmax - wb.xmin)) * (rect.width - pad.l - pad.r); }
-      function wy(y){ return rect.height - pad.b - ((y - wb.ymin) / (wb.ymax - wb.ymin)) * (rect.height - pad.t - pad.b); }
-      series.forEach(s=>{ if(!s.visible) return; s.points.forEach(p=>{ const sx = wx(p.x), sy = wy(p.y); const d = Math.hypot(sx-mx, sy-my); if(d<nd && d<14){ nd=d; nearest = {series:s, point:p, sx,sy}; } }); });
-      if(nearest){ tooltip.style.display='block'; tooltip.style.left=(nearest.sx+12)+'px'; tooltip.style.top=(nearest.sy+12)+'px'; tooltip.innerHTML = `<div style="font-weight:700">${nearest.series.name}</div><div class="mono">x: ${nearest.point.x}</div><div class="mono">y: ${nearest.point.y}</div>`; }
-      else tooltip.style.display='none';
+    document.getElementById('draw').addEventListener('click', () => {
+      const xInput = document.getElementById('xValues').value;
+      const yInput = document.getElementById('yValues').value;
+      const color = document.getElementById('lineColor').value;
+
+      if (!xInput || !yInput) return alert('Please enter both X and Y values');
+
+      const xVals = xInput.split(',').map(Number);
+      const yVals = yInput.split(',').map(Number);
+
+      if (xVals.length !== yVals.length) return alert('X and Y values must be the same length');
+
+      drawGraph(xVals, yVals, color);
     });
 
-    canvas.addEventListener('wheel', e=>{ e.preventDefault(); const delta = -e.deltaY; const factor = (delta>0)?1.08:0.92; const old = view.scale; view.scale = Math.max(0.1, Math.min(8, view.scale * factor)); draw(); });
-
-    // Reset
-    qs('#reset').addEventListener('click', ()=>{ view = {tx:0,ty:0,scale:1}; draw(); });
-
-    // Toggle UI inputs
-    qs('#showPoints').addEventListener('change', e=>{ showPoints = e.target.checked; draw(); });
-    qs('#smoothing').addEventListener('change', e=>{ smoothing = e.target.checked; draw(); });
-    qs('#grid').addEventListener('change', e=>{ showGrid = e.target.checked; draw(); });
-
-    // Export PNG
-    qs('#exportPNG').addEventListener('click', ()=>{
-      // draw onto temporary canvas at higher res
-      const rect = cvsWrap.getBoundingClientRect();
-      const tmp = document.createElement('canvas'); tmp.width = rect.width*2; tmp.height = rect.height*2; const tctx = tmp.getContext('2d');
-      // scale context to match drawing code expectations (we'll re-run draw logic into tctx)
-      // For simplicity, clone current canvas content
-      tctx.drawImage(canvas, 0, 0, tmp.width, tmp.height);
-      tmp.toBlob(blob=>{ const url = URL.createObjectURL(blob); const a = document.createElement('a'); a.href=url; a.download='line-graph.png'; a.click(); URL.revokeObjectURL(url); }, 'image/png');
+    document.getElementById('clear').addEventListener('click', () => {
+      ctx.clearRect(0, 0, canvas.width, canvas.height);
+      document.getElementById('xValues').value = '';
+      document.getElementById('yValues').value = '';
     });
-
-    // Download CSV (combine all series) — naive
-    qs('#downloadCSV').addEventListener('click', ()=>{
-      let csv = '';
-      series.forEach(s=>{ csv += `# ${s.name}\n`; csv += 'x,y\n'; s.points.forEach(p=>{ csv += `${p.x},${p.y}\n`; }); csv += '\n'; });
-      const blob = new Blob([csv],{type:'text/csv'}); const url = URL.createObjectURL(blob); const a = document.createElement('a'); a.href=url; a.download='series-export.csv'; a.click(); URL.revokeObjectURL(url);
-    });
-
-    // Initial demo
-    addSample(); addSample(); rebuildUI();
-    // Finalize
-    window.requestAnimationFrame(resize);
-
-    // helpful: allow adding points by clicking while holding Alt key
-    canvas.addEventListener('dblclick', e=>{
-      const alt = e.altKey || e.shiftKey;
-      if(!alt) return; // intentionally require modifier to avoid accidental edits
-      // compute world coords from mouse
-      const rect = canvas.getBoundingClientRect(); const mx = e.clientX - rect.left, my = e.clientY - rect.top;
-      const wb = worldBounds(); const pad = {l:60,r:20,t:24,b:44};
-      const x = wb.xmin + ( (mx - pad.l) / (rect.width - pad.l - pad.r) ) * (wb.xmax - wb.xmin);
-      const y = wb.ymin + ( (rect.height - pad.b - my) / (rect.height - pad.t - pad.b)) * (wb.ymax - wb.ymin);
-      if(series.length===0) addSeries('Series 1');
-      series[0].points.push({x: +x.toFixed(3), y: +y.toFixed(3)});
-      rebuildUI(); draw();
-    });
-
-    // lightweight keyboard shortcuts
-    window.addEventListener('keydown', e=>{
-      if(e.key==='z' && (e.ctrlKey||e.metaKey)){ e.preventDefault(); qs('#reset').click(); }
-      if(e.key==='p' && (e.ctrlKey||e.metaKey)){ e.preventDefault(); qs('#exportPNG').click(); }
-    });
-
-  })();
   </script>
 </body>
 </html>

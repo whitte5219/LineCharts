@@ -3,445 +3,390 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width,initial-scale=1" />
-  <title>w-shop — pastel remix (single file)</title>
+  <title>Line Graph Maker — Single File</title>
   <style>
-    /* ENTIRELY NEW STYLE: pastel, warm, airy, soft-glass aesthetic */
+    /* Minimal, modern styling (no external libs). Clean UI, responsive. */
     :root{
-      --bg:#f7f8fb;
-      --card:#ffffff;
-      --muted:#7b8794;
-      --accent:#ff7ab6; /* pink */
-      --accent-2:#7ad0ff; /* sky */
-      --glass: rgba(255,255,255,0.6);
-      --shadow: 0 6px 18px rgba(22,30,50,0.07);
-      --radius:14px;
-      --mono: 'Segoe UI', Roboto, -apple-system, system-ui, "Helvetica Neue", Arial;
+      --bg:#0f1724; --card:#0b1220; --muted:#9aa6b2; --accent:#6ee7b7; --glass:rgba(255,255,255,0.03);
+      --gap:12px; --radius:12px; --mono: ui-monospace, SFMono-Regular, Menlo, Monaco, 'Roboto Mono', monospace;
     }
-    html,body{height:100%;background:linear-gradient(180deg,var(--bg),#eef3f8);font-family:var(--mono);color:#10283a;margin:0}
-    .wrap{min-height:100%;display:flex;align-items:center;justify-content:center;padding:40px}
-    .app{
-      width:100%;max-width:1100px;background:linear-gradient(180deg,rgba(255,255,255,0.9),rgba(250,251,255,0.96));border-radius:20px;box-shadow:var(--shadow);padding:28px;backdrop-filter:blur(6px);
-      border:1px solid rgba(12,18,30,0.04);
-    }
-    header{display:flex;align-items:flex-start;justify-content:space-between;gap:12px}
-    .title{
-      line-height:1;
-    }
-    h1{font-size:30px;margin:0;color:#0f2b3a}
-    .subtitle{font-size:12px;color:var(--muted);margin-top:6px}
+    *{box-sizing:border-box}
+    html,body{height:100%;margin:0;font-family:Inter, ui-sans-serif, system-ui, -apple-system, 'Segoe UI', Roboto, 'Helvetica Neue', Arial;color:#e6eef6;background:linear-gradient(180deg,var(--bg),#071026);}
+    .wrap{max-width:1100px;margin:28px auto;padding:20px;display:grid;grid-template-columns:360px 1fr;gap:20px}
 
-    /* user controls */
-    .user-controls{display:flex;align-items:center;gap:10px}
-    .btn{display:inline-flex;align-items:center;gap:8px;padding:8px 12px;border-radius:12px;background:linear-gradient(90deg,var(--glass),rgba(255,255,255,0.85));border:1px solid rgba(16,40,50,0.06);cursor:pointer;box-shadow:0 2px 6px rgba(16,40,50,0.04);font-weight:600}
-    .btn.small{padding:6px 8px;border-radius:10px;font-size:13px}
-    .badge{background:linear-gradient(90deg,var(--accent),var(--accent-2));color:white;padding:6px 8px;border-radius:999px;font-size:12px}
-    .user-name{font-size:14px;color:#16323b}
-
-    /* tabs */
-    .tabs{display:flex;gap:10px;margin-top:20px}
-    .tab{padding:10px 16px;border-radius:12px;background:transparent;color:var(--muted);cursor:pointer;border:1px solid transparent}
-    .tab.active{background:linear-gradient(90deg,rgba(122,208,255,0.18),rgba(255,122,182,0.08));box-shadow:0 6px 18px rgba(122,208,255,0.06);color:#0f2b3a}
-
-    /* layout */
-    .content{display:grid;grid-template-columns:300px 1fr;gap:18px;margin-top:18px}
-    .card{background:var(--card);border-radius:var(--radius);padding:16px;box-shadow:var(--shadow);border:1px solid rgba(10,20,30,0.03)}
-    .side{display:flex;flex-direction:column;gap:12px}
-    .categories{display:flex;flex-wrap:wrap;gap:8px}
-    .cat-btn{padding:8px 10px;border-radius:999px;border:1px dashed rgba(16,40,50,0.06);background:transparent;cursor:pointer;font-size:13px}
-    .cat-btn.active{background:linear-gradient(90deg,rgba(255,122,182,0.12),rgba(122,208,255,0.08));border-style:solid}
-
-    /* product list */
-    .products-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:12px}
-    .grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(220px,1fr));gap:12px}
-    .product-card{padding:12px;border-radius:12px;background:linear-gradient(180deg,#fff, #fbfcff);border:1px solid rgba(10,20,30,0.03)}
-    .p-title{font-weight:700;margin:0 0 6px 0}
-    .p-desc{font-size:13px;color:var(--muted);margin:0 0 8px 0}
-    .p-meta{font-size:12px;color:var(--muted);display:flex;justify-content:space-between}
-    .p-actions{display:flex;gap:8px;margin-top:10px}
-    .pill{padding:6px 8px;border-radius:10px;font-size:13px;border:1px solid rgba(10,20,30,0.04);background:transparent;cursor:pointer}
-
-    /* forms */
-    label{display:block;font-size:13px;color:#234044;margin-bottom:6px}
-    input[type=text], input[type=url], textarea, input[type=number], input[type=file]{width:100%;padding:10px;border-radius:10px;border:1px solid rgba(16,40,50,0.06);background:linear-gradient(180deg,#fff,#fbfdff);box-sizing:border-box}
-    textarea{min-height:80px;resize:vertical}
+    /* Left control panel */
+    .panel{background:linear-gradient(180deg,var(--card),#071026);padding:16px;border-radius:var(--radius);box-shadow:0 6px 24px rgba(2,6,23,0.6);min-height:420px}
+    h1{font-size:18px;margin:0 0 8px}
     .muted{color:var(--muted);font-size:13px}
-    .row{display:flex;gap:8px}
-    .flex{flex:1}
 
-    /* reviews */
-    .review-card{padding:10px;border-radius:10px;border:1px solid rgba(16,40,50,0.04);background:linear-gradient(180deg,#fff,#fbfcff)}
-    .reviewer{font-weight:700}
-    .r-date{font-size:12px;color:var(--muted)}
+    label{display:block;margin-top:10px;font-size:13px;color:var(--muted)}
+    input[type=text], input[type=file], .small-input{width:100%;padding:8px;border-radius:8px;border:1px solid rgba(255,255,255,0.04);background:transparent;color:inherit}
+    .row{display:flex;gap:8px;align-items:center}
+    button{background:linear-gradient(90deg,var(--accent),#4fb6ff);border:0;padding:8px 12px;border-radius:10px;color:#04211a;font-weight:600;cursor:pointer}
+    button.ghost{background:transparent;border:1px solid rgba(255,255,255,0.06);color:var(--muted)}
+    .series-list{margin-top:12px;display:flex;flex-direction:column;gap:8px}
+    .series-card{display:flex;gap:8px;align-items:center;padding:8px;border-radius:10px;background:var(--glass);border:1px solid rgba(255,255,255,0.02)}
+    .color-swatch{width:18px;height:18px;border-radius:6px;border:1px solid rgba(255,255,255,0.06)}
+    .flex{display:flex;gap:8px;align-items:center}
+    .legend{display:flex;gap:8px;flex-wrap:wrap;margin-top:10px}
 
-    /* contact cards side-by-side on contact tab */
-    .contact-grid{display:grid;grid-template-columns:1fr 320px;gap:12px}
+    /* Right area: canvas + controls */
+    .card{background:linear-gradient(180deg, rgba(255,255,255,0.02), rgba(255,255,255,0.01));padding:12px;border-radius:14px;min-height:420px}
+    .canvas-wrap{position:relative;border-radius:10px;overflow:hidden;background:linear-gradient(180deg,#071428,#021226);height:520px}
+    canvas{display:block;width:100%;height:100%;}
+    .overlay-ui{position:absolute;right:10px;top:10px;background:rgba(2,6,23,0.5);padding:8px;border-radius:10px;border:1px solid rgba(255,255,255,0.03)}
+    .hint{font-size:12px;color:var(--muted);margin-top:8px}
+    .toolbar{display:flex;gap:8px;align-items:center}
+    .range{display:flex;gap:6px;align-items:center}
+    .footer-controls{display:flex;gap:8px;margin-top:12px}
 
-    /* responsive */
-    @media(max-width:880px){
-      .content{grid-template-columns:1fr;}
-      .contact-grid{grid-template-columns:1fr}
-      .tabs{overflow:auto}
+    /* Responsive */
+    @media (max-width:1000px){
+      .wrap{grid-template-columns:1fr;max-width:760px}
+      .canvas-wrap{height:420px}
     }
-    footer{margin-top:14px;font-size:12px;color:var(--muted);text-align:center}
+    /* small touch-friendly tweaks */
+    input[type=range]{width:120px}
+    .small{font-size:12px;padding:6px}
+    .mono{font-family:var(--mono);font-size:13px}
+    .note{font-size:12px;color:var(--muted)}
   </style>
 </head>
 <body>
   <div class="wrap">
-    <div class="app" id="app">
-      <header>
-        <div class="title">
-          <h1>w-shop</h1>
-          <div class="subtitle">stock sales and reviews — pastel remix</div>
+    <aside class="panel">
+      <h1>Line Graph Maker</h1>
+      <div class="muted">Create polished line charts — CSV upload, multiple series, pan/zoom, export PNG</div>
+
+      <label>Upload CSV (x,y columns or header row)</label>
+      <input id="csvFile" type="file" accept="text/csv" />
+      <div class="hint">CSV must have two or more columns. First column is treated as X by default.</div>
+
+      <label style="margin-top:12px">Quick data (paste CSV)</label>
+      <textarea id="csvText" rows="4" style="width:100%;padding:8px;border-radius:8px;background:transparent;color:inherit;border:1px solid rgba(255,255,255,0.04);resize:vertical" placeholder="x,y\n0,5\n1,8\n2,3"></textarea>
+      <div style="display:flex;gap:8px;margin-top:8px"><button id="loadText">Load</button><button class="ghost" id="clear">Clear</button></div>
+
+      <label style="margin-top:12px">Add Series Manually</label>
+      <div class="row"><input id="seriesName" class="small-input" type="text" placeholder="Series name (e.g. Sales)"/><input id="seriesColor" type="color" value="#6ee7b7" style="width:48px;padding:3px;border-radius:8px"/></div>
+      <div style="display:flex;gap:8px;margin-top:8px"><button id="addSeries">Add Series</button><button id="addSample" class="ghost">Add Sample</button></div>
+
+      <div class="series-list" id="seriesList"></div>
+
+      <div style="margin-top:12px;display:flex;flex-direction:column;gap:6px">
+        <label class="row"><input id="showPoints" type="checkbox" checked style="margin-right:8px"/> Show points</label>
+        <label class="row"><input id="smoothing" type="checkbox" style="margin-right:8px"/> Smooth lines (bezier)</label>
+        <label class="row"><input id="grid" type="checkbox" checked style="margin-right:8px"/> Show grid</label>
+      </div>
+
+      <div class="footer-controls">
+        <button id="exportPNG">Export PNG</button>
+        <button id="downloadCSV" class="ghost">Download CSV</button>
+      </div>
+
+      <div style="margin-top:12px" class="note">Controls: Drag to pan, mouse wheel / pinch to zoom, hover for tooltip.</div>
+    </aside>
+
+    <main class="card">
+      <div class="canvas-wrap" id="canvasWrap">
+        <canvas id="chartCanvas"></canvas>
+        <div class="overlay-ui" id="overlay">
+          <div class="toolbar">
+            <div class="range mono">Zoom: <span id="zoomVal">1x</span></div>
+            <div style="width:10px"></div>
+            <button id="reset" class="ghost small">Reset</button>
+          </div>
+          <div class="legend" id="legend"></div>
         </div>
-        <div class="user-controls">
-          <div class="user-name" id="displayName">guest</div>
-          <div id="adminBadge" style="display:none" class="badge">ADMIN</div>
-          <button class="btn small" id="loginBtn">Log in</button>
-          <button class="btn small" id="logoutBtn" style="display:none">Log out</button>
-        </div>
-      </header>
-
-      <nav class="tabs" role="tablist">
-        <button class="tab active" data-tab="sales">Sales</button>
-        <button class="tab" data-tab="reviews">Reviews</button>
-        <button class="tab" data-tab="contact">Contact</button>
-      </nav>
-
-      <main style="margin-top:16px">
-        <!-- SALES TAB -->
-        <section class="content" id="salesTab">
-          <aside class="side card">
-            <div style="display:flex;justify-content:space-between;align-items:center">
-              <strong>Categories</strong>
-              <button id="newCatBtn" class="btn small" title="New category">New</button>
-            </div>
-            <div class="muted" style="font-size:12px;margin-top:6px">Select a category to view and add products</div>
-            <div class="categories" id="categoriesList" style="margin-top:12px"></div>
-          </aside>
-
-          <section class="card">
-            <div class="products-header">
-              <div>
-                <div id="selectedCatName" style="font-weight:800">No category selected</div>
-                <div class="muted" id="selectedCatInfo">Choose a category from the left or create a new one.</div>
-              </div>
-            </div>
-
-            <div id="adminProductForm" style="display:none;margin-bottom:12px">
-              <form id="addProductForm" onsubmit="return false">
-                <div style="display:grid;grid-template-columns:1fr 120px;gap:8px">
-                  <div>
-                    <label>Product name</label>
-                    <input type="text" id="pname" required placeholder="e.g. Comfortable mug" />
-                  </div>
-                  <div>
-                    <label>Cost</label>
-                    <input type="number" id="pcost" required min="0" step="0.01" placeholder="12.50" />
-                  </div>
-                </div>
-                <label style="margin-top:8px">Description</label>
-                <textarea id="pdesc" placeholder="Short description"></textarea>
-                <label style="margin-top:8px">Link (offer URL)</label>
-                <input type="url" id="plink" placeholder="https://example.com/product" />
-                <div style="display:flex;gap:8px;margin-top:10px">
-                  <button id="addProductBtn" class="btn">Add product</button>
-                  <button id="clearProductForm" class="btn" type="button">Clear</button>
-                </div>
-              </form>
-            </div>
-
-            <div id="productsGrid" class="grid"></div>
-          </section>
-        </section>
-
-        <!-- REVIEWS TAB (hidden by default) -->
-        <section id="reviewsTab" style="display:none;margin-top:10px">
-          <div class="content">
-            <aside class="side card">
-              <div><strong>Leave a review</strong></div>
-              <form id="reviewForm" onsubmit="return false">
-                <label>Name</label>
-                <input type="text" id="rname" placeholder="Your name" required />
-                <label style="margin-top:8px">Review</label>
-                <textarea id="rtext" placeholder="Your thoughts..." required></textarea>
-                <div style="display:flex;gap:8px;margin-top:10px">
-                  <button id="addReviewBtn" class="btn">Add review</button>
-                  <button id="clearReviewsBtn" class="btn" type="button">Clear all</button>
-                </div>
-              </form>
-            </aside>
-
-            <section class="card">
-              <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px">
-                <strong>Reviews</strong>
-                <div class="muted">Stored locally in your browser</div>
-              </div>
-              <div id="reviewsList" style="display:flex;flex-direction:column;gap:8px"></div>
-            </section>
-          </div>
-
-          <div style="margin-top:12px;display:flex;gap:12px;flex-direction:column">
-            <div class="card">
-              <strong>Backup / Import</strong>
-              <div style="margin-top:8px" class="muted">Export or import app data (categories, products, reviews, session).</div>
-              <div style="display:flex;gap:8px;margin-top:10px">
-                <button id="exportBtn" class="btn">Export JSON</button>
-                <label class="btn" for="importFile">Import JSON</label>
-                <input id="importFile" type="file" accept="application/json" style="display:none" />
-                <button id="resetBtn" class="btn">Reset (clear all)</button>
-              </div>
-            </div>
-          </div>
-        </section>
-
-        <!-- CONTACT TAB -->
-        <section id="contactTab" style="display:none;margin-top:10px">
-          <div class="contact-grid">
-            <div class="card">
-              <strong>Contact owner</strong>
-              <div class="muted" style="margin-top:6px">Message will open your email client (mailto) or you can copy the message to clipboard.</div>
-              <form id="contactForm" onsubmit="return false" style="margin-top:8px">
-                <label>Name</label>
-                <input type="text" id="cname" placeholder="Your name" required />
-                <label style="margin-top:8px">Email (optional)</label>
-                <input type="text" id="cemail" placeholder="you@example.com" />
-                <label style="margin-top:8px">Message</label>
-                <textarea id="cmessage" placeholder="Hi — I'd like to..." required></textarea>
-                <div style="display:flex;gap:8px;margin-top:8px">
-                  <button id="mailtoBtn" class="btn">Open email</button>
-                  <button id="copyMessageBtn" class="btn" type="button">Copy message</button>
-                </div>
-              </form>
-            </div>
-
-            <div class="card">
-              <strong>Owner info</strong>
-              <div class="muted" style="margin-top:8px">Admin username:</div>
-              <div id="ownerName" style="font-weight:800;margin-top:6px"></div>
-              <div class="muted" style="margin-top:10px">Note: To become admin, log in with the admin username (no password required).</div>
-            </div>
-          </div>
-        </section>
-
-      </main>
-
-      <footer>Built for local usage • Data stored in localStorage • Paste on GitHub as a single HTML file</footer>
-    </div>
+        <div id="tooltip" style="position:absolute;pointer-events:none;display:none;padding:8px;border-radius:8px;background:rgba(2,6,23,0.9);border:1px solid rgba(255,255,255,0.04);font-size:13px;color:#eafaf0"></div>
+      </div>
+    </main>
   </div>
 
   <script>
-    (function(){
-      // --- CONFIG ---
-      const ADMIN_USERNAME = 'owner'; // changeable — shown in contact
-      const STORAGE_KEY = 'wshop_remix_data_v1';
-      const SESSION_KEY = 'wshop_remix_session_v1';
+  // Single-file interactive line chart maker
+  // Features: multiple series, CSV parsing, pan/zoom, tooltip, export PNG, download CSV
 
-      // --- DEFAULT DATA ---
-      const defaultData = { categories: [], reviews: [] };
+  (function(){
+    // Utilities
+    const qs = s => document.querySelector(s);
+    const qsa = s => Array.from(document.querySelectorAll(s));
+    const canvas = qs('#chartCanvas');
+    const ctx = canvas.getContext('2d');
+    const overlay = qs('#overlay');
+    const legendEl = qs('#legend');
+    const tooltip = qs('#tooltip');
+    const cvsWrap = qs('#canvasWrap');
 
-      // --- UTIL ---
-      const $ = (sel, ctx=document)=>ctx.querySelector(sel);
-      const $$ = (sel, ctx=document)=>Array.from(ctx.querySelectorAll(sel));
-      const nowISO = ()=>new Date().toISOString();
-      const formatDate = iso => new Date(iso).toLocaleString();
+    // State
+    let series = []; // {id,name,color,points:[{x,y}],visible}
+    let view = {tx:0,ty:0,scale:1}; // transform, scale where 1 = default
+    let dragging = false, last = null;
+    let showPoints = true, smoothing=false, showGrid=true;
 
-      function loadData(){
+    // Canvas sizing for crisp rendering
+    function resize(){
+      const rect = cvsWrap.getBoundingClientRect();
+      const dpr = Math.min(window.devicePixelRatio || 1, 2);
+      canvas.width = Math.floor(rect.width * dpr);
+      canvas.height = Math.floor(rect.height * dpr);
+      canvas.style.width = rect.width + 'px';
+      canvas.style.height = rect.height + 'px';
+      ctx.setTransform(dpr,0,0,dpr,0,0);
+      draw();
+    }
+    window.addEventListener('resize', resize);
+
+    // Example sample series
+    function addSample(){
+      const id = 's' + Date.now();
+      const name = 'Sample '+(series.length+1);
+      const color = '#'+Math.floor(Math.random()*16777215).toString(16).padStart(6,'0');
+      const pts = [];
+      for(let i=0;i<12;i++){ pts.push({x:i, y: Math.round(4+Math.random()*16)}); }
+      series.push({id,name,color,points:pts,visible:true});
+      rebuildUI(); draw();
+    }
+
+    // Add empty series
+    function addSeries(name,color){
+      const id = 's' + Date.now();
+      series.push({id,name: name||'Series '+(series.length+1), color: color||'#6ee7b7', points: [], visible:true});
+      rebuildUI(); draw();
+    }
+
+    // CSV parsing (simple) — supports header or plain numbers
+    function parseCSV(text){
+      const lines = text.trim().split(/\r?\n/).map(l=>l.trim()).filter(Boolean);
+      if(lines.length===0) return [];
+      const rows = lines.map(l=>l.split(',').map(s=>s.trim()));
+      // If header: detect non-numeric first row
+      let start=0; if(rows[0].some(v=>isNaN(Number(v)))) start=1;
+      // produce array of columns
+      const cols = rows.slice(start).map(r=>r.map(v=>Number(v)));
+      // transpose
+      const trans = cols.map(r=>r); // already rows
+      return trans.map(r=>({x:r[0], y:r[1]}));
+    }
+
+    // Load CSV file
+    qs('#csvFile').addEventListener('change', e=>{
+      const f = e.target.files[0]; if(!f) return;
+      const reader = new FileReader();
+      reader.onload = ev => {
         try{
-          const raw = localStorage.getItem(STORAGE_KEY);
-          return raw ? JSON.parse(raw) : JSON.parse(JSON.stringify(defaultData));
-        }catch(e){
-          console.error('Failed load',e);return JSON.parse(JSON.stringify(defaultData));
+          const pts = parseCSV(ev.target.result);
+          // if we have at least one series, add as new series, else create
+          if(series.length===0) series.push({id:'s0',name:'Series 1',color:'#6ee7b7',points:pts,visible:true});
+          else series.push({id:'s'+Date.now(),name:'Series '+(series.length+1),color:'#'+Math.floor(Math.random()*16777215).toString(16).padStart(6,'0'),points:pts,visible:true});
+          rebuildUI(); draw();
+        }catch(err){alert('Failed to parse CSV: '+err.message)}
+      };
+      reader.readAsText(f);
+      e.target.value='';
+    });
+
+    // Load CSV text area
+    qs('#loadText').addEventListener('click', ()=>{
+      const text = qs('#csvText').value;
+      if(!text.trim()){alert('Paste CSV text first');return}
+      try{
+        const pts = parseCSV(text);
+        series.push({id:'s'+Date.now(),name:'Series '+(series.length+1),color:'#'+Math.floor(Math.random()*16777215).toString(16).padStart(6,'0'),points:pts,visible:true});
+        qs('#csvText').value='';
+        rebuildUI(); draw();
+      }catch(err){alert('Failed to parse CSV: '+err.message)}
+    });
+
+    qs('#clear').addEventListener('click', ()=>{ series=[]; rebuildUI(); draw(); });
+    qs('#addSample').addEventListener('click', addSample);
+    qs('#addSeries').addEventListener('click', ()=>{ addSeries(qs('#seriesName').value, qs('#seriesColor').value); qs('#seriesName').value=''; });
+
+    // Series UI
+    function rebuildUI(){
+      legendEl.innerHTML='';
+      const container = qs('#seriesList'); container.innerHTML='';
+      series.forEach(s=>{
+        // left panel card
+        const card = document.createElement('div'); card.className='series-card';
+        const sw = document.createElement('div'); sw.className='color-swatch'; sw.style.background = s.color;
+        const name = document.createElement('div'); name.textContent = s.name; name.style.flex='1';
+        const vis = document.createElement('input'); vis.type='checkbox'; vis.checked = s.visible; vis.title='Toggle visibility';
+        vis.addEventListener('change', ()=>{ s.visible = vis.checked; draw(); });
+        const del = document.createElement('button'); del.className='ghost small'; del.textContent='Delete'; del.addEventListener('click', ()=>{ series = series.filter(x=>x!==s); rebuildUI(); draw(); });
+        const edit = document.createElement('button'); edit.className='small'; edit.textContent='Edit'; edit.addEventListener('click', ()=>{ editSeries(s); });
+        card.append(sw,name,vis,edit,del);
+        container.appendChild(card);
+
+        // legend item
+        const lg = document.createElement('div'); lg.style.display='flex'; lg.style.alignItems='center'; lg.style.gap='8px';
+        const lsw = document.createElement('div'); lsw.style.width='14px'; lsw.style.height='14px'; lsw.style.borderRadius='4px'; lsw.style.background = s.color; lsw.title = s.name;
+        const ltxt = document.createElement('div'); ltxt.textContent = s.name; ltxt.style.fontSize='13px'; ltxt.style.color='var(--muted)';
+        lg.append(lsw,ltxt);
+        legendEl.appendChild(lg);
+      });
+    }
+
+    // Simple edit modal (browser prompt for brevity)
+    function editSeries(s){
+      const name = prompt('Series name:', s.name) || s.name;
+      const color = prompt('Hex color (e.g. #ff3344):', s.color) || s.color;
+      s.name = name; s.color = color;
+      rebuildUI(); draw();
+    }
+
+    // Drawing helpers
+    function worldBounds(){
+      // Find global x/y min/max across visible series
+      let xs = [], ys = [];
+      series.forEach(s=>{ if(!s.visible) return; s.points.forEach(p=>{ if(isFinite(p.x)&&isFinite(p.y)){ xs.push(p.x); ys.push(p.y); } }); });
+      if(xs.length===0) return {xmin:0,xmax:10,ymin:0,ymax:10};
+      let xmin = Math.min(...xs), xmax = Math.max(...xs);
+      let ymin = Math.min(...ys), ymax = Math.max(...ys);
+      if(xmin===xmax){ xmin -= 0.5; xmax += 0.5; }
+      if(ymin===ymax){ ymin -= 0.5; ymax += 0.5; }
+      return {xmin,xmax,ymin,ymax};
+    }
+
+    function draw(){
+      const rect = cvsWrap.getBoundingClientRect();
+      ctx.clearRect(0,0,rect.width,rect.height);
+      // padding for axes
+      const pad = {l:60,r:20,t:24,b:44};
+      const w = rect.width, h = rect.height;
+      // determine world bounds and map with view transform
+      const wb = worldBounds();
+
+      // apply scale about center
+      const scale = view.scale;
+      const tx = view.tx, ty = view.ty;
+
+      // world to screen mapping
+      function wx(x){ return pad.l + ((x - wb.xmin) / (wb.xmax - wb.xmin)) * (w - pad.l - pad.r); }
+      function wy(y){ return h - pad.b - ((y - wb.ymin) / (wb.ymax - wb.ymin)) * (h - pad.t - pad.b); }
+
+      // grid
+      if(showGrid){
+        ctx.save(); ctx.globalAlpha=0.9; ctx.strokeStyle='rgba(255,255,255,0.03)'; ctx.lineWidth=1;
+        // vertical ticks
+        const xticks = 6; for(let i=0;i<=xticks;i++){ const x = wb.xmin + (wb.xmax - wb.xmin) * (i/xticks); const sx = wx(x); ctx.beginPath(); ctx.moveTo(sx, pad.t); ctx.lineTo(sx, h - pad.b); ctx.stroke(); }
+        const yticks = 6; for(let j=0;j<=yticks;j++){ const y = wb.ymin + (wb.ymax - wb.ymin) * (j/yticks); const sy = wy(y); ctx.beginPath(); ctx.moveTo(pad.l, sy); ctx.lineTo(w - pad.r, sy); ctx.stroke(); }
+        ctx.restore();
+      }
+
+      // axes
+      ctx.save(); ctx.strokeStyle='rgba(255,255,255,0.08)'; ctx.fillStyle='var(--muted)'; ctx.lineWidth=1.2; ctx.font='12px '+getComputedStyle(document.body).fontFamily;
+      // y axis
+      ctx.beginPath(); ctx.moveTo(pad.l, pad.t-6); ctx.lineTo(pad.l, h - pad.b+6); ctx.stroke();
+      // x axis
+      ctx.beginPath(); ctx.moveTo(pad.l-6, h - pad.b); ctx.lineTo(w - pad.r+6, h - pad.b); ctx.stroke();
+
+      // ticks and labels
+      ctx.fillStyle='rgba(255,255,255,0.7)';
+      const xtickCount = 6; for(let i=0;i<=xtickCount;i++){ const x = wb.xmin + (wb.xmax - wb.xmin)*(i/xtickCount); const sx = wx(x); ctx.fillText((+x.toFixed(2)), sx-10, h - pad.b + 16); }
+      const ytickCount = 6; for(let j=0;j<=ytickCount;j++){ const y = wb.ymin + (wb.ymax - wb.ymin)*(j/ytickCount); const sy = wy(y); ctx.fillText((+y.toFixed(2)), 6, sy+4); }
+      ctx.restore();
+
+      // draw lines for each series
+      series.forEach(s=>{
+        if(!s.visible) return;
+        const pts = s.points.filter(p=>isFinite(p.x) && isFinite(p.y)).sort((a,b)=>a.x-b.x);
+        if(pts.length===0) return;
+        ctx.save(); ctx.lineWidth=2.2; ctx.strokeStyle = s.color; ctx.fillStyle = s.color; ctx.beginPath();
+        if(smoothing && pts.length>1){
+          // simple bezier smoothing
+          ctx.moveTo(wx(pts[0].x), wy(pts[0].y));
+          for(let i=1;i<pts.length;i++){
+            const p0 = pts[i-1], p1 = pts[i];
+            const cx = (wx(p0.x)+wx(p1.x))/2; const cy = (wy(p0.y)+wy(p1.y))/2;
+            ctx.quadraticCurveTo(wx(p0.x), wy(p0.y), cx, cy);
+          }
+        } else {
+          ctx.moveTo(wx(pts[0].x), wy(pts[0].y));
+          for(let i=1;i<pts.length;i++) ctx.lineTo(wx(pts[i].x), wy(pts[i].y));
         }
-      }
-      function saveData(d){ localStorage.setItem(STORAGE_KEY,JSON.stringify(d)); }
-      function loadSession(){ try{ const raw=localStorage.getItem(SESSION_KEY); return raw?JSON.parse(raw):{user:null}; }catch(e){return {user:null};} }
-      function saveSession(s){ localStorage.setItem(SESSION_KEY,JSON.stringify(s)); }
-
-      // --- STATE ---
-      let data = loadData();
-      let session = loadSession();
-      let selectedCategory = null;
-
-      // --- ELEMENTS ---
-      const tabs = $$('.tab');
-      const salesTab = $('#salesTab');
-      const reviewsTab = $('#reviewsTab');
-      const contactTab = $('#contactTab');
-
-      const displayNameEl = $('#displayName');
-      const adminBadge = $('#adminBadge');
-      const loginBtn = $('#loginBtn');
-      const logoutBtn = $('#logoutBtn');
-
-      const newCatBtn = $('#newCatBtn');
-      const categoriesList = $('#categoriesList');
-      const selectedCatName = $('#selectedCatName');
-      const selectedCatInfo = $('#selectedCatInfo');
-      const adminProductForm = $('#adminProductForm');
-      const addProductForm = $('#addProductForm');
-      const addProductBtn = $('#addProductBtn');
-      const clearProductForm = $('#clearProductForm');
-      const productsGrid = $('#productsGrid');
-
-      // reviews
-      const reviewForm = $('#reviewForm');
-      const rname = $('#rname');
-      const rtext = $('#rtext');
-      const reviewsList = $('#reviewsList');
-      const addReviewBtn = $('#addReviewBtn');
-      const clearReviewsBtn = $('#clearReviewsBtn');
-
-      // backup
-      const exportBtn = $('#exportBtn');
-      const importFile = $('#importFile');
-      const resetBtn = $('#resetBtn');
-
-      // contact
-      const ownerName = $('#ownerName');
-      const mailtoBtn = $('#mailtoBtn');
-      const copyMessageBtn = $('#copyMessageBtn');
-      const cname = $('#cname');
-      const cemail = $('#cemail');
-      const cmessage = $('#cmessage');
-
-      // init
-      function init(){
-        ownerName.textContent = ADMIN_USERNAME;
-        renderSession();
-        renderCategories();
-        renderProducts();
-        renderReviews();
-        attach();
-      }
-
-      // --- session handling ---
-      function renderSession(){
-        const user = session.user;
-        displayNameEl.textContent = user || 'guest';
-        const isAdmin = user === ADMIN_USERNAME;
-        adminBadge.style.display = isAdmin ? 'inline-block' : 'none';
-        loginBtn.style.display = user ? 'none' : 'inline-flex';
-        logoutBtn.style.display = user ? 'inline-flex' : 'none';
-        adminProductForm.style.display = isAdmin && selectedCategory ? '' : 'none';
-      }
-      loginBtn.addEventListener('click',()=>{
-        const u = prompt('Enter username to log in:');
-        if(!u) return;
-        session.user = u.trim(); saveSession(session); renderSession();
-      });
-      logoutBtn.addEventListener('click',()=>{ session.user = null; saveSession(session); renderSession(); });
-
-      // --- tabs ---
-      tabs.forEach(t=>t.addEventListener('click',()=>{
-        tabs.forEach(x=>x.classList.remove('active'));
-        t.classList.add('active');
-        const tab = t.dataset.tab;
-        salesTab.style.display = tab==='sales' ? '' : 'none';
-        reviewsTab.style.display = tab==='reviews' ? '' : 'none';
-        contactTab.style.display = tab==='contact' ? '' : 'none';
-      }));
-
-      // --- categories ---
-      function createCategory(name){ if(!name) return; data.categories.push({id: 'c_' + Date.now(), name, products:[]}); saveData(data); renderCategories(); }
-      newCatBtn.addEventListener('click',()=>{
-        if(session.user !== ADMIN_USERNAME){ alert('Only admin can create categories'); return; }
-        const name = prompt('New category name:'); if(!name) return; createCategory(name.trim());
+        ctx.stroke();
+        if(showPoints){
+          ctx.globalCompositeOperation = 'source-over';
+          for(const p of pts){ ctx.beginPath(); ctx.arc(wx(p.x), wy(p.y), 3.2, 0, Math.PI*2); ctx.fill(); }
+        }
+        ctx.restore();
       });
 
-      function renderCategories(){
-        categoriesList.innerHTML = '';
-        if(data.categories.length===0){ categoriesList.innerHTML = '<div class="muted">No categories yet</div>'; selectedCategory=null; selectedCatName.textContent='No category selected'; selectedCatInfo.textContent='Create one using the New button (admin only).'; renderProducts(); return; }
-        data.categories.forEach(cat=>{
-          const b = document.createElement('button'); b.className='cat-btn'; b.textContent=cat.name; b.addEventListener('click',()=>{ selectCategory(cat.id); });
-          if(selectedCategory===cat.id) b.classList.add('active');
-          categoriesList.appendChild(b);
-        });
-      }
+      // update zoom label
+      qs('#zoomVal').textContent = view.scale.toFixed(2)+'x';
+    }
 
-      function selectCategory(id){ selectedCategory=id; const cat = data.categories.find(c=>c.id===id); selectedCatName.textContent = cat ? cat.name : '—'; selectedCatInfo.textContent = cat ? (cat.products.length + ' product(s)') : '';
-        renderCategories(); renderProducts(); const isAdmin = session.user===ADMIN_USERNAME; adminProductForm.style.display = isAdmin ? '' : 'none'; }
+    // Interaction: pan (drag), zoom (wheel)
+    canvas.addEventListener('mousedown', e=>{ dragging=true; last = {x:e.clientX,y:e.clientY}; canvas.style.cursor='grabbing'; });
+    window.addEventListener('mouseup', ()=>{ dragging=false; last=null; canvas.style.cursor='default'; });
+    window.addEventListener('mousemove', e=>{
+      if(dragging && last){ const dx = e.clientX - last.x; const dy = e.clientY - last.y; last = {x:e.clientX,y:e.clientY}; view.tx += dx; view.ty += dy; draw(); }
+      // tooltip logic: find nearest point in screen space
+      const rect = canvas.getBoundingClientRect(); const mx = e.clientX - rect.left, my = e.clientY - rect.top;
+      let nearest = null, nd = Infinity;
+      // compute mapping again
+      const wb = worldBounds(); const pad = {l:60,r:20,t:24,b:44};
+      function wx(x){ return pad.l + ((x - wb.xmin) / (wb.xmax - wb.xmin)) * (rect.width - pad.l - pad.r); }
+      function wy(y){ return rect.height - pad.b - ((y - wb.ymin) / (wb.ymax - wb.ymin)) * (rect.height - pad.t - pad.b); }
+      series.forEach(s=>{ if(!s.visible) return; s.points.forEach(p=>{ const sx = wx(p.x), sy = wy(p.y); const d = Math.hypot(sx-mx, sy-my); if(d<nd && d<14){ nd=d; nearest = {series:s, point:p, sx,sy}; } }); });
+      if(nearest){ tooltip.style.display='block'; tooltip.style.left=(nearest.sx+12)+'px'; tooltip.style.top=(nearest.sy+12)+'px'; tooltip.innerHTML = `<div style="font-weight:700">${nearest.series.name}</div><div class="mono">x: ${nearest.point.x}</div><div class="mono">y: ${nearest.point.y}</div>`; }
+      else tooltip.style.display='none';
+    });
 
-      // --- products ---
-      addProductBtn.addEventListener('click',()=>{
-        if(session.user !== ADMIN_USERNAME){ alert('Only admin can add products'); return; }
-        const cat = data.categories.find(c=>c.id===selectedCategory);
-        if(!cat){ alert('Select a category first'); return; }
-        const name = $('#pname').value.trim(); const desc = $('#pdesc').value.trim(); const cost = parseFloat($('#pcost').value) || 0; const link = $('#plink').value.trim();
-        if(!name) { alert('Product needs a name'); return; }
-        const product = { id: 'p_'+Date.now(), name, desc, cost, link, added: nowISO() };
-        cat.products.unshift(product); saveData(data); renderProducts(); addProductForm.reset();
-      });
-      clearProductForm.addEventListener('click',()=>addProductForm.reset());
+    canvas.addEventListener('wheel', e=>{ e.preventDefault(); const delta = -e.deltaY; const factor = (delta>0)?1.08:0.92; const old = view.scale; view.scale = Math.max(0.1, Math.min(8, view.scale * factor)); draw(); });
 
-      function renderProducts(){ productsGrid.innerHTML = '';
-        const cat = data.categories.find(c=>c.id===selectedCategory);
-        if(!cat){ productsGrid.innerHTML = '<div class="muted">No category selected</div>'; return; }
-        if(cat.products.length===0){ productsGrid.innerHTML = '<div class="muted">No products yet — add one using the form above (admin)</div>'; return; }
-        cat.products.forEach(prod=>{
-          const pc = document.createElement('div'); pc.className='product-card';
-          pc.innerHTML = `<div class="p-title">${escapeHtml(prod.name)}</div>
-                          <div class="p-desc">${escapeHtml(prod.desc || '')}</div>
-                          <div class="p-meta"><div>Cost: $${Number(prod.cost).toFixed(2)}</div><div class="muted">${formatDate(prod.added)}</div></div>`;
-          const actions = document.createElement('div'); actions.className='p-actions';
-          const openBtn = document.createElement('button'); openBtn.className='pill'; openBtn.textContent='Open offer'; openBtn.addEventListener('click',()=>{ if(prod.link) window.open(prod.link,'_blank'); else alert('No link provided'); });
-          const copyBtn = document.createElement('button'); copyBtn.className='pill'; copyBtn.textContent='Copy link'; copyBtn.addEventListener('click',()=>{ const txt = prod.link || location.href; navigator.clipboard.writeText(txt).then(()=>{ alert('Link copied to clipboard'); }).catch(()=>{ alert('Copy failed — your browser may block clipboard access'); }); });
-          actions.appendChild(openBtn); actions.appendChild(copyBtn);
-          if(session.user === ADMIN_USERNAME){ const del = document.createElement('button'); del.className='pill'; del.textContent='Delete'; del.addEventListener('click',()=>{ if(confirm('Delete this product?')){ cat.products = cat.products.filter(p=>p.id!==prod.id); saveData(data); renderProducts(); } }); actions.appendChild(del); }
-          pc.appendChild(actions);
-          productsGrid.appendChild(pc);
-        });
-      }
+    // Reset
+    qs('#reset').addEventListener('click', ()=>{ view = {tx:0,ty:0,scale:1}; draw(); });
 
-      // --- reviews ---
-      addReviewBtn.addEventListener('click',()=>{
-        const name = rname.value.trim(); const text = rtext.value.trim(); if(!name||!text) return alert('Fill name and review');
-        data.reviews.unshift({id:'r_'+Date.now(), name, text, date: nowISO()}); saveData(data); renderReviews(); reviewForm.reset();
-      });
-      clearReviewsBtn.addEventListener('click',()=>{ if(!confirm('Clear all reviews?')) return; data.reviews=[]; saveData(data); renderReviews(); });
+    // Toggle UI inputs
+    qs('#showPoints').addEventListener('change', e=>{ showPoints = e.target.checked; draw(); });
+    qs('#smoothing').addEventListener('change', e=>{ smoothing = e.target.checked; draw(); });
+    qs('#grid').addEventListener('change', e=>{ showGrid = e.target.checked; draw(); });
 
-      function renderReviews(){ reviewsList.innerHTML=''; if(!data.reviews||data.reviews.length===0){ reviewsList.innerHTML='<div class="muted">No reviews yet</div>'; return; }
-        data.reviews.forEach(r=>{
-          const div = document.createElement('div'); div.className='review-card'; div.innerHTML = `<div class="reviewer">${escapeHtml(r.name)}</div><div class="r-date">${formatDate(r.date)}</div><div style="margin-top:6px">${escapeHtml(r.text)}</div>`; reviewsList.appendChild(div);
-        });
-      }
+    // Export PNG
+    qs('#exportPNG').addEventListener('click', ()=>{
+      // draw onto temporary canvas at higher res
+      const rect = cvsWrap.getBoundingClientRect();
+      const tmp = document.createElement('canvas'); tmp.width = rect.width*2; tmp.height = rect.height*2; const tctx = tmp.getContext('2d');
+      // scale context to match drawing code expectations (we'll re-run draw logic into tctx)
+      // For simplicity, clone current canvas content
+      tctx.drawImage(canvas, 0, 0, tmp.width, tmp.height);
+      tmp.toBlob(blob=>{ const url = URL.createObjectURL(blob); const a = document.createElement('a'); a.href=url; a.download='line-graph.png'; a.click(); URL.revokeObjectURL(url); }, 'image/png');
+    });
 
-      // --- backup / import / reset ---
-      exportBtn.addEventListener('click',()=>{
-        const content = {data, session}; const blob = new Blob([JSON.stringify(content,null,2)],{type:'application/json'});
-        const url = URL.createObjectURL(blob); const a = document.createElement('a'); a.href=url; a.download='wshop-backup.json'; document.body.appendChild(a); a.click(); a.remove(); URL.revokeObjectURL(url);
-      });
-      importFile.addEventListener('change', async (e)=>{
-        const f = e.target.files[0]; if(!f) return; try{ const text = await f.text(); const parsed = JSON.parse(text); if(parsed.data) { data = parsed.data; session = parsed.session||{user:null}; saveData(data); saveSession(session); selectedCategory = null; renderCategories(); renderProducts(); renderReviews(); renderSession(); alert('Import successful'); } else { alert('Invalid backup format'); } }catch(err){ alert('Import failed: '+err); }
-        importFile.value='';
-      });
-      resetBtn.addEventListener('click',()=>{ if(!confirm('Clear all local data? This cannot be undone.')) return; data={categories:[],reviews:[]}; session={user:null}; saveData(data); saveSession(session); selectedCategory=null; renderCategories(); renderProducts(); renderReviews(); renderSession(); });
+    // Download CSV (combine all series) — naive
+    qs('#downloadCSV').addEventListener('click', ()=>{
+      let csv = '';
+      series.forEach(s=>{ csv += `# ${s.name}\n`; csv += 'x,y\n'; s.points.forEach(p=>{ csv += `${p.x},${p.y}\n`; }); csv += '\n'; });
+      const blob = new Blob([csv],{type:'text/csv'}); const url = URL.createObjectURL(blob); const a = document.createElement('a'); a.href=url; a.download='series-export.csv'; a.click(); URL.revokeObjectURL(url);
+    });
 
-      // --- contact ---
-      mailtoBtn.addEventListener('click',()=>{
-        const to = ''; // owner email not provided — leave blank so mail client lets user set
-        const subject = encodeURIComponent('Message to w-shop owner');
-        const body = encodeURIComponent('From: '+cname.value+'\nEmail: '+cemail.value+'\n\n'+cmessage.value);
-        const href = `mailto:${to}?subject=${subject}&body=${body}`;
-        window.location.href = href;
-      });
-      copyMessageBtn.addEventListener('click',()=>{
-        const text = `From: ${cname.value}\nEmail: ${cemail.value}\n\n${cmessage.value}`;
-        navigator.clipboard.writeText(text).then(()=>alert('Message copied')).catch(()=>alert('Copy failed'));
-      });
+    // Initial demo
+    addSample(); addSample(); rebuildUI();
+    // Finalize
+    window.requestAnimationFrame(resize);
 
-      // --- helpers ---
-      function escapeHtml(str){ if(!str) return ''; return str.replace(/[&<>\"]/g, c=>({ '&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;' }[c])); }
+    // helpful: allow adding points by clicking while holding Alt key
+    canvas.addEventListener('dblclick', e=>{
+      const alt = e.altKey || e.shiftKey;
+      if(!alt) return; // intentionally require modifier to avoid accidental edits
+      // compute world coords from mouse
+      const rect = canvas.getBoundingClientRect(); const mx = e.clientX - rect.left, my = e.clientY - rect.top;
+      const wb = worldBounds(); const pad = {l:60,r:20,t:24,b:44};
+      const x = wb.xmin + ( (mx - pad.l) / (rect.width - pad.l - pad.r) ) * (wb.xmax - wb.xmin);
+      const y = wb.ymin + ( (rect.height - pad.b - my) / (rect.height - pad.t - pad.b)) * (wb.ymax - wb.ymin);
+      if(series.length===0) addSeries('Series 1');
+      series[0].points.push({x: +x.toFixed(3), y: +y.toFixed(3)});
+      rebuildUI(); draw();
+    });
 
-      function attach(){
-        // keyboard shortcut: ctrl+shift+a to toggle admin login prompt (convenience)
-        document.addEventListener('keydown',e=>{ if(e.ctrlKey && e.shiftKey && e.key.toLowerCase()==='a'){ loginBtn.click(); } });
-      }
+    // lightweight keyboard shortcuts
+    window.addEventListener('keydown', e=>{
+      if(e.key==='z' && (e.ctrlKey||e.metaKey)){ e.preventDefault(); qs('#reset').click(); }
+      if(e.key==='p' && (e.ctrlKey||e.metaKey)){ e.preventDefault(); qs('#exportPNG').click(); }
+    });
 
-      // expose data to window for debugging when running locally
-      window.__wshop = {getData:()=>JSON.parse(JSON.stringify(data)), save:()=>saveData(data)};
-
-      init();
-    })();
+  })();
   </script>
 </body>
 </html>

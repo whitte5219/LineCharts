@@ -3,493 +3,445 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width,initial-scale=1" />
-  <title>W‑Shop — Minimal Futuristic</title>
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;800&display=swap" rel="stylesheet">
+  <title>w-shop — pastel remix (single file)</title>
   <style>
+    /* ENTIRELY NEW STYLE: pastel, warm, airy, soft-glass aesthetic */
     :root{
-      --bg-1:#020617;
-      --bg-2:#07102a;
-      --glass: rgba(255,255,255,0.04);
-      --muted: rgba(230,238,246,0.55);
-      --accent: #7ee7ff;
-      --accent-2:#4ac0ff;
-      --radius:16px;
-      --gap:1.25rem;
-      --shadow: 0 10px 30px rgba(2,8,23,0.6);
-      --font: 'Inter', system-ui, -apple-system, 'Segoe UI', Roboto, 'Helvetica Neue', Arial;
+      --bg:#f7f8fb;
+      --card:#ffffff;
+      --muted:#7b8794;
+      --accent:#ff7ab6; /* pink */
+      --accent-2:#7ad0ff; /* sky */
+      --glass: rgba(255,255,255,0.6);
+      --shadow: 0 6px 18px rgba(22,30,50,0.07);
+      --radius:14px;
+      --mono: 'Segoe UI', Roboto, -apple-system, system-ui, "Helvetica Neue", Arial;
     }
-    *{box-sizing:border-box}
-    html,body{height:100%;margin:0;font-family:var(--font);background:linear-gradient(180deg,var(--bg-1) 0%, var(--bg-2) 100%);color:#e8f6ff;}
-    body{display:flex;align-items:center;justify-content:center;padding:32px}
-    .app{width:100%;max-width:1100px}
+    html,body{height:100%;background:linear-gradient(180deg,var(--bg),#eef3f8);font-family:var(--mono);color:#10283a;margin:0}
+    .wrap{min-height:100%;display:flex;align-items:center;justify-content:center;padding:40px}
+    .app{
+      width:100%;max-width:1100px;background:linear-gradient(180deg,rgba(255,255,255,0.9),rgba(250,251,255,0.96));border-radius:20px;box-shadow:var(--shadow);padding:28px;backdrop-filter:blur(6px);
+      border:1px solid rgba(12,18,30,0.04);
+    }
+    header{display:flex;align-items:flex-start;justify-content:space-between;gap:12px}
+    .title{
+      line-height:1;
+    }
+    h1{font-size:30px;margin:0;color:#0f2b3a}
+    .subtitle{font-size:12px;color:var(--muted);margin-top:6px}
 
-    /* header */
-    header{display:flex;align-items:center;justify-content:space-between;margin-bottom:24px}
-    .brand{display:flex;gap:18px;align-items:center}
-    .logo{width:56px;height:56px;border-radius:12px;background:linear-gradient(135deg,var(--accent) 0%, var(--accent-2) 100%);display:flex;align-items:center;justify-content:center;font-weight:800;color:#01121a;box-shadow:0 8px 32px rgba(74,192,255,0.08)}
-    .title{line-height:1}
-    .title h1{font-size:1.5rem;margin:0}
-    .title p{margin:0;font-size:0.875rem;color:var(--muted)}
-
-    /* controls */
-    .controls{display:flex;gap:12px;align-items:center}
-    .btn{background:transparent;border:1px solid rgba(255,255,255,0.06);padding:10px 14px;border-radius:12px;color:var(--muted);cursor:pointer;font-weight:600;backdrop-filter: blur(6px);transition:all .22s}
-    .btn.primary{background:linear-gradient(90deg,var(--accent) 0%,var(--accent-2) 100%);color:#022;box-shadow:0 8px 30px rgba(74,192,255,0.08);border:none}
-    .btn.ghost{border-style:dashed}
-    .user-badge{font-size:0.85rem;color:var(--muted)}
-    .admin-tag{background:linear-gradient(90deg,#ffd6d6,#ffb0b0);padding:6px 10px;border-radius:999px;color:#3a0202;font-weight:700}
-
-    /* layout */
-    .panels{display:grid;grid-template-columns:360px 1fr;gap:var(--gap);align-items:start}
-    .panel{background:linear-gradient(180deg, rgba(255,255,255,0.02), rgba(255,255,255,0.01));border-radius:var(--radius);padding:18px;box-shadow:var(--shadow);border:1px solid rgba(255,255,255,0.02)}
+    /* user controls */
+    .user-controls{display:flex;align-items:center;gap:10px}
+    .btn{display:inline-flex;align-items:center;gap:8px;padding:8px 12px;border-radius:12px;background:linear-gradient(90deg,var(--glass),rgba(255,255,255,0.85));border:1px solid rgba(16,40,50,0.06);cursor:pointer;box-shadow:0 2px 6px rgba(16,40,50,0.04);font-weight:600}
+    .btn.small{padding:6px 8px;border-radius:10px;font-size:13px}
+    .badge{background:linear-gradient(90deg,var(--accent),var(--accent-2));color:white;padding:6px 8px;border-radius:999px;font-size:12px}
+    .user-name{font-size:14px;color:#16323b}
 
     /* tabs */
-    .tabs{display:flex;gap:10px;margin-bottom:14px}
-    .tab{padding:8px 14px;border-radius:10px;background:transparent;color:var(--muted);cursor:pointer;font-weight:600;border:1px solid transparent}
-    .tab.active{background:linear-gradient(180deg, rgba(124,231,255,0.08), rgba(74,192,255,0.06));color:var(--accent);border-color:rgba(74,192,255,0.08)}
+    .tabs{display:flex;gap:10px;margin-top:20px}
+    .tab{padding:10px 16px;border-radius:12px;background:transparent;color:var(--muted);cursor:pointer;border:1px solid transparent}
+    .tab.active{background:linear-gradient(90deg,rgba(122,208,255,0.18),rgba(255,122,182,0.08));box-shadow:0 6px 18px rgba(122,208,255,0.06);color:#0f2b3a}
 
-    /* list */
-    .list{display:flex;flex-direction:column;gap:10px}
-    .item{display:flex;align-items:center;justify-content:space-between;padding:12px;border-radius:12px;background:rgba(255,255,255,0.01);border:1px solid rgba(255,255,255,0.02);transition:transform .18s,box-shadow .18s}
-    .item:hover{transform:translateY(-6px);box-shadow:0 18px 40px rgba(2,8,23,0.6)}
-    .item .meta{display:flex;flex-direction:column}
-    .item .meta h3{margin:0;font-size:1rem}
-    .item .meta p{margin:0;font-size:0.85rem;color:var(--muted)}
+    /* layout */
+    .content{display:grid;grid-template-columns:300px 1fr;gap:18px;margin-top:18px}
+    .card{background:var(--card);border-radius:var(--radius);padding:16px;box-shadow:var(--shadow);border:1px solid rgba(10,20,30,0.03)}
+    .side{display:flex;flex-direction:column;gap:12px}
+    .categories{display:flex;flex-wrap:wrap;gap:8px}
+    .cat-btn{padding:8px 10px;border-radius:999px;border:1px dashed rgba(16,40,50,0.06);background:transparent;cursor:pointer;font-size:13px}
+    .cat-btn.active{background:linear-gradient(90deg,rgba(255,122,182,0.12),rgba(122,208,255,0.08));border-style:solid}
 
-    /* products grid */
-    .products{display:grid;grid-template-columns:repeat(auto-fill,minmax(240px,1fr));gap:14px}
-    .card{padding:14px;border-radius:14px;background:linear-gradient(180deg, rgba(255,255,255,0.01), rgba(255,255,255,0.00));border:1px solid rgba(255,255,255,0.02)}
-    .card h4{margin:0 0 6px 0;font-size:1.05rem}
-    .card p{margin:0 0 10px 0;color:var(--muted);font-size:0.9rem}
-    .card .meta{display:flex;gap:8px;align-items:center}
-    .chip{padding:8px 10px;border-radius:999px;background:rgba(255,255,255,0.02);font-weight:700;font-size:0.875rem}
+    /* product list */
+    .products-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:12px}
+    .grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(220px,1fr));gap:12px}
+    .product-card{padding:12px;border-radius:12px;background:linear-gradient(180deg,#fff, #fbfcff);border:1px solid rgba(10,20,30,0.03)}
+    .p-title{font-weight:700;margin:0 0 6px 0}
+    .p-desc{font-size:13px;color:var(--muted);margin:0 0 8px 0}
+    .p-meta{font-size:12px;color:var(--muted);display:flex;justify-content:space-between}
+    .p-actions{display:flex;gap:8px;margin-top:10px}
+    .pill{padding:6px 8px;border-radius:10px;font-size:13px;border:1px solid rgba(10,20,30,0.04);background:transparent;cursor:pointer}
 
     /* forms */
-    form{display:flex;flex-direction:column;gap:10px}
-    input, textarea, select{background:transparent;border:1px solid rgba(255,255,255,0.04);padding:10px;border-radius:10px;color:inherit;font-size:0.95rem}
-    textarea{min-height:100px;resize:vertical}
-    .row{display:flex;gap:10px}
-    .row .flex{flex:1}
+    label{display:block;font-size:13px;color:#234044;margin-bottom:6px}
+    input[type=text], input[type=url], textarea, input[type=number], input[type=file]{width:100%;padding:10px;border-radius:10px;border:1px solid rgba(16,40,50,0.06);background:linear-gradient(180deg,#fff,#fbfdff);box-sizing:border-box}
+    textarea{min-height:80px;resize:vertical}
+    .muted{color:var(--muted);font-size:13px}
+    .row{display:flex;gap:8px}
+    .flex{flex:1}
 
-    /* footer */
-    .footer{margin-top:18px;text-align:center;color:var(--muted);font-size:0.85rem}
+    /* reviews */
+    .review-card{padding:10px;border-radius:10px;border:1px solid rgba(16,40,50,0.04);background:linear-gradient(180deg,#fff,#fbfcff)}
+    .reviewer{font-weight:700}
+    .r-date{font-size:12px;color:var(--muted)}
 
-    /* tiny toast */
-    .toast{position:fixed;left:50%;transform:translateX(-50%);bottom:28px;background:linear-gradient(90deg,var(--accent) 0%,var(--accent-2) 100%);color:#02111a;padding:10px 16px;border-radius:12px;box-shadow:0 12px 30px rgba(2,8,23,0.5);font-weight:700}
+    /* contact cards side-by-side on contact tab */
+    .contact-grid{display:grid;grid-template-columns:1fr 320px;gap:12px}
 
     /* responsive */
-    @media (max-width:880px){.panels{grid-template-columns:1fr;}.logo{width:48px;height:48px}}
+    @media(max-width:880px){
+      .content{grid-template-columns:1fr;}
+      .contact-grid{grid-template-columns:1fr}
+      .tabs{overflow:auto}
+    }
+    footer{margin-top:14px;font-size:12px;color:var(--muted);text-align:center}
   </style>
 </head>
 <body>
-  <div class="app" id="app">
-    <header>
-      <div class="brand">
-        <div class="logo">W</div>
+  <div class="wrap">
+    <div class="app" id="app">
+      <header>
         <div class="title">
-          <h1>W‑Shop</h1>
-          <p>Offers • Reviews — minimal & futuristic</p>
+          <h1>w-shop</h1>
+          <div class="subtitle">stock sales and reviews — pastel remix</div>
         </div>
-      </div>
-      <div class="controls">
-        <div class="user-badge" id="user-display">Not signed in</div>
-        <div id="admin-badge" class="admin-tag" style="display:none">ADMIN</div>
-        <button id="loginBtn" class="btn">Sign in</button>
-        <button id="logoutBtn" class="btn ghost" style="display:none">Sign out</button>
-      </div>
-    </header>
+        <div class="user-controls">
+          <div class="user-name" id="displayName">guest</div>
+          <div id="adminBadge" style="display:none" class="badge">ADMIN</div>
+          <button class="btn small" id="loginBtn">Log in</button>
+          <button class="btn small" id="logoutBtn" style="display:none">Log out</button>
+        </div>
+      </header>
 
-    <div class="tabs" role="tablist">
-      <div class="tab active" data-tab="sales">Sales</div>
-      <div class="tab" data-tab="reviews">Reviews</div>
-      <div class="tab" data-tab="contact">Contact</div>
+      <nav class="tabs" role="tablist">
+        <button class="tab active" data-tab="sales">Sales</button>
+        <button class="tab" data-tab="reviews">Reviews</button>
+        <button class="tab" data-tab="contact">Contact</button>
+      </nav>
+
+      <main style="margin-top:16px">
+        <!-- SALES TAB -->
+        <section class="content" id="salesTab">
+          <aside class="side card">
+            <div style="display:flex;justify-content:space-between;align-items:center">
+              <strong>Categories</strong>
+              <button id="newCatBtn" class="btn small" title="New category">New</button>
+            </div>
+            <div class="muted" style="font-size:12px;margin-top:6px">Select a category to view and add products</div>
+            <div class="categories" id="categoriesList" style="margin-top:12px"></div>
+          </aside>
+
+          <section class="card">
+            <div class="products-header">
+              <div>
+                <div id="selectedCatName" style="font-weight:800">No category selected</div>
+                <div class="muted" id="selectedCatInfo">Choose a category from the left or create a new one.</div>
+              </div>
+            </div>
+
+            <div id="adminProductForm" style="display:none;margin-bottom:12px">
+              <form id="addProductForm" onsubmit="return false">
+                <div style="display:grid;grid-template-columns:1fr 120px;gap:8px">
+                  <div>
+                    <label>Product name</label>
+                    <input type="text" id="pname" required placeholder="e.g. Comfortable mug" />
+                  </div>
+                  <div>
+                    <label>Cost</label>
+                    <input type="number" id="pcost" required min="0" step="0.01" placeholder="12.50" />
+                  </div>
+                </div>
+                <label style="margin-top:8px">Description</label>
+                <textarea id="pdesc" placeholder="Short description"></textarea>
+                <label style="margin-top:8px">Link (offer URL)</label>
+                <input type="url" id="plink" placeholder="https://example.com/product" />
+                <div style="display:flex;gap:8px;margin-top:10px">
+                  <button id="addProductBtn" class="btn">Add product</button>
+                  <button id="clearProductForm" class="btn" type="button">Clear</button>
+                </div>
+              </form>
+            </div>
+
+            <div id="productsGrid" class="grid"></div>
+          </section>
+        </section>
+
+        <!-- REVIEWS TAB (hidden by default) -->
+        <section id="reviewsTab" style="display:none;margin-top:10px">
+          <div class="content">
+            <aside class="side card">
+              <div><strong>Leave a review</strong></div>
+              <form id="reviewForm" onsubmit="return false">
+                <label>Name</label>
+                <input type="text" id="rname" placeholder="Your name" required />
+                <label style="margin-top:8px">Review</label>
+                <textarea id="rtext" placeholder="Your thoughts..." required></textarea>
+                <div style="display:flex;gap:8px;margin-top:10px">
+                  <button id="addReviewBtn" class="btn">Add review</button>
+                  <button id="clearReviewsBtn" class="btn" type="button">Clear all</button>
+                </div>
+              </form>
+            </aside>
+
+            <section class="card">
+              <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px">
+                <strong>Reviews</strong>
+                <div class="muted">Stored locally in your browser</div>
+              </div>
+              <div id="reviewsList" style="display:flex;flex-direction:column;gap:8px"></div>
+            </section>
+          </div>
+
+          <div style="margin-top:12px;display:flex;gap:12px;flex-direction:column">
+            <div class="card">
+              <strong>Backup / Import</strong>
+              <div style="margin-top:8px" class="muted">Export or import app data (categories, products, reviews, session).</div>
+              <div style="display:flex;gap:8px;margin-top:10px">
+                <button id="exportBtn" class="btn">Export JSON</button>
+                <label class="btn" for="importFile">Import JSON</label>
+                <input id="importFile" type="file" accept="application/json" style="display:none" />
+                <button id="resetBtn" class="btn">Reset (clear all)</button>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <!-- CONTACT TAB -->
+        <section id="contactTab" style="display:none;margin-top:10px">
+          <div class="contact-grid">
+            <div class="card">
+              <strong>Contact owner</strong>
+              <div class="muted" style="margin-top:6px">Message will open your email client (mailto) or you can copy the message to clipboard.</div>
+              <form id="contactForm" onsubmit="return false" style="margin-top:8px">
+                <label>Name</label>
+                <input type="text" id="cname" placeholder="Your name" required />
+                <label style="margin-top:8px">Email (optional)</label>
+                <input type="text" id="cemail" placeholder="you@example.com" />
+                <label style="margin-top:8px">Message</label>
+                <textarea id="cmessage" placeholder="Hi — I'd like to..." required></textarea>
+                <div style="display:flex;gap:8px;margin-top:8px">
+                  <button id="mailtoBtn" class="btn">Open email</button>
+                  <button id="copyMessageBtn" class="btn" type="button">Copy message</button>
+                </div>
+              </form>
+            </div>
+
+            <div class="card">
+              <strong>Owner info</strong>
+              <div class="muted" style="margin-top:8px">Admin username:</div>
+              <div id="ownerName" style="font-weight:800;margin-top:6px"></div>
+              <div class="muted" style="margin-top:10px">Note: To become admin, log in with the admin username (no password required).</div>
+            </div>
+          </div>
+        </section>
+
+      </main>
+
+      <footer>Built for local usage • Data stored in localStorage • Paste on GitHub as a single HTML file</footer>
     </div>
-
-    <main class="panels">
-      <!-- left column: management / categories / forms -->
-      <aside class="panel" aria-labelledby="left-column">
-        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:12px">
-          <div>
-            <strong>Categories</strong>
-            <div style="color:var(--muted);font-size:0.86rem">Create & select — admin functions only</div>
-          </div>
-          <div>
-            <button id="newCategoryBtn" class="btn" style="display:none">+ Category</button>
-          </div>
-        </div>
-
-        <div id="categoriesList" class="list" aria-live="polite"></div>
-
-        <div style="height:12px"></div>
-
-        <div>
-          <strong>Selected</strong>
-          <div id="selectedCategoryTitle" style="color:var(--muted);margin-top:6px">None</div>
-        </div>
-
-        <hr style="opacity:.06;margin:14px 0;border:none;height:1px;background:linear-gradient(90deg,transparent,rgba(255,255,255,0.02),transparent)">
-
-        <div>
-          <strong>Add product</strong>
-          <div style="color:var(--muted);font-size:0.86rem">Only visible to admin</div>
-          <form id="addProductForm" style="margin-top:10px;display:none">
-            <input id="prodName" placeholder="Product name" required />
-            <textarea id="prodDesc" placeholder="Short description" required></textarea>
-            <div class="row">
-              <input id="prodCost" type="number" placeholder="Price" class="flex" min="0" step="any" required />
-              <input id="prodLink" type="url" placeholder="Offer URL (https://...)" class="flex" required />
-            </div>
-            <div style="display:flex;gap:8px;justify-content:flex-end;margin-top:6px">
-              <button type="button" id="cancelAddProduct" class="btn ghost">Cancel</button>
-              <button type="submit" class="btn primary">Add</button>
-            </div>
-          </form>
-        </div>
-      </aside>
-
-      <!-- right column: content panels -->
-      <section class="panel" id="contentPanel">
-        <!-- Sales view -->
-        <div id="sales" class="view active">
-          <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:12px">
-            <div>
-              <h2 style="margin:0;font-size:1.15rem">Products</h2>
-              <div style="color:var(--muted);font-size:0.9rem">Browse categories or open a category to see items</div>
-            </div>
-            <div>
-              <button id="exportData" class="btn ghost">Export</button>
-              <input id="importFile" type="file" accept="application/json" style="display:none" />
-              <button id="importBtn" class="btn">Import</button>
-            </div>
-          </div>
-
-          <div id="productsArea">
-            <div id="productsGrid" class="products"></div>
-          </div>
-        </div>
-
-        <!-- Reviews view -->
-        <div id="reviews" class="view" style="display:none">
-          <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:12px">
-            <div>
-              <h2 style="margin:0;font-size:1.15rem">Reviews</h2>
-              <div style="color:var(--muted);font-size:0.9rem">Local-only — stored in your browser</div>
-            </div>
-            <div>
-              <button id="clearReviews" class="btn ghost">Clear</button>
-            </div>
-          </div>
-
-          <div style="display:flex;gap:12px;margin-bottom:12px">
-            <form id="addReviewForm" style="flex:1">
-              <input id="reviewerName" placeholder="Your name" required />
-              <textarea id="reviewText" placeholder="Your review" required></textarea>
-              <div style="display:flex;justify-content:flex-end;gap:8px">
-                <button class="btn primary">Add review</button>
-              </div>
-            </form>
-          </div>
-
-          <div id="reviewsList" class="list"></div>
-        </div>
-
-        <!-- Contact view -->
-        <div id="contact" class="view" style="display:none">
-          <div style="display:flex;gap:14px;flex-direction:column">
-            <div>
-              <h2 style="margin:0;font-size:1.15rem">Contact</h2>
-              <div style="color:var(--muted);font-size:0.9rem">Open an email or copy the message</div>
-            </div>
-
-            <form id="contactForm" style="max-width:680px;display:flex;flex-direction:column;gap:10px">
-              <input id="contactName" placeholder="Your name" required />
-              <input id="contactEmail" placeholder="Your email (optional)" />
-              <textarea id="contactMessage" placeholder="Message" required></textarea>
-              <div style="display:flex;justify-content:flex-end;gap:8px">
-                <button type="button" id="copyContact" class="btn ghost">Copy</button>
-                <button type="submit" class="btn primary">Open mail</button>
-              </div>
-            </form>
-
-            <div style="color:var(--muted);font-size:0.9rem">Owner: <span id="ownerName"></span></div>
-          </div>
-        </div>
-
-      </section>
-    </main>
-
-    <div class="footer">Prototype — data stored locally on your device.</div>
   </div>
 
-  <!-- single script as requested -->
   <script>
-  (function(){
-    // CONFIG
-    const ADMIN_USERNAME = 'whitte5219';
-    const OWNER_EMAIL = 'youremail@example.com';
-    const APP_STORAGE_KEY = 'wshop_data_v2';
-    const SESSION_KEY = 'wshop_session_v2';
+    (function(){
+      // --- CONFIG ---
+      const ADMIN_USERNAME = 'owner'; // changeable — shown in contact
+      const STORAGE_KEY = 'wshop_remix_data_v1';
+      const SESSION_KEY = 'wshop_remix_session_v1';
 
-    // DEFAULTS
-    const defaults = { categories: [], products: {}, reviews: [] };
+      // --- DEFAULT DATA ---
+      const defaultData = { categories: [], reviews: [] };
 
-    // UTIL
-    function q(sel, ctx=document){return ctx.querySelector(sel)}
-    function qa(sel, ctx=document){return Array.from(ctx.querySelectorAll(sel))}
-    function nowISO(){return new Date().toISOString()}
-    function uid(prefix){return prefix + '_' + Date.now().toString(36) + '_' + Math.random().toString(36).slice(2,8)}
-    function toast(text, ms=2200){
-      const t = document.createElement('div'); t.className='toast'; t.textContent = text; document.body.appendChild(t);
-      setTimeout(()=>{t.style.opacity='0'; t.addEventListener('transitionend', ()=>t.remove())}, ms);
-    }
-    function safeJSONParse(str, fallback){try{return JSON.parse(str)}catch(e){return fallback}}
+      // --- UTIL ---
+      const $ = (sel, ctx=document)=>ctx.querySelector(sel);
+      const $$ = (sel, ctx=document)=>Array.from(ctx.querySelectorAll(sel));
+      const nowISO = ()=>new Date().toISOString();
+      const formatDate = iso => new Date(iso).toLocaleString();
 
-    // state/session
-    let state = loadState();
-    function loadState(){
-      try{const raw = localStorage.getItem(APP_STORAGE_KEY); if(!raw) return JSON.parse(JSON.stringify(defaults)); return Object.assign({}, defaults, safeJSONParse(raw, {}));}catch(e){console.error(e); return JSON.parse(JSON.stringify(defaults));}
-    }
-    function saveState(){ localStorage.setItem(APP_STORAGE_KEY, JSON.stringify(state)); }
+      function loadData(){
+        try{
+          const raw = localStorage.getItem(STORAGE_KEY);
+          return raw ? JSON.parse(raw) : JSON.parse(JSON.stringify(defaultData));
+        }catch(e){
+          console.error('Failed load',e);return JSON.parse(JSON.stringify(defaultData));
+        }
+      }
+      function saveData(d){ localStorage.setItem(STORAGE_KEY,JSON.stringify(d)); }
+      function loadSession(){ try{ const raw=localStorage.getItem(SESSION_KEY); return raw?JSON.parse(raw):{user:null}; }catch(e){return {user:null};} }
+      function saveSession(s){ localStorage.setItem(SESSION_KEY,JSON.stringify(s)); }
 
-    function getSession(){ return safeJSONParse(localStorage.getItem(SESSION_KEY), null); }
-    function saveSession(sess){ localStorage.setItem(SESSION_KEY, JSON.stringify(sess)); }
-    function clearSession(){ localStorage.removeItem(SESSION_KEY); }
+      // --- STATE ---
+      let data = loadData();
+      let session = loadSession();
+      let selectedCategory = null;
 
-    // DOM refs
-    const userDisplay = q('#user-display');
-    const adminBadge = q('#admin-badge');
-    const loginBtn = q('#loginBtn');
-    const logoutBtn = q('#logoutBtn');
-    const newCategoryBtn = q('#newCategoryBtn');
-    const categoriesList = q('#categoriesList');
-    const selectedCategoryTitle = q('#selectedCategoryTitle');
-    const addProductForm = q('#addProductForm');
-    const productsGrid = q('#productsGrid');
-    const productsArea = q('#productsArea');
+      // --- ELEMENTS ---
+      const tabs = $$('.tab');
+      const salesTab = $('#salesTab');
+      const reviewsTab = $('#reviewsTab');
+      const contactTab = $('#contactTab');
 
-    const tabs = qa('.tab');
-    const views = qa('.view');
-    const ownerNameEl = q('#ownerName');
+      const displayNameEl = $('#displayName');
+      const adminBadge = $('#adminBadge');
+      const loginBtn = $('#loginBtn');
+      const logoutBtn = $('#logoutBtn');
 
-    // forms
-    const addProductInputs = {
-      name: q('#prodName'), desc: q('#prodDesc'), cost: q('#prodCost'), link: q('#prodLink')
-    };
+      const newCatBtn = $('#newCatBtn');
+      const categoriesList = $('#categoriesList');
+      const selectedCatName = $('#selectedCatName');
+      const selectedCatInfo = $('#selectedCatInfo');
+      const adminProductForm = $('#adminProductForm');
+      const addProductForm = $('#addProductForm');
+      const addProductBtn = $('#addProductBtn');
+      const clearProductForm = $('#clearProductForm');
+      const productsGrid = $('#productsGrid');
 
-    const reviewForm = q('#addReviewForm');
-    const reviewsList = q('#reviewsList');
+      // reviews
+      const reviewForm = $('#reviewForm');
+      const rname = $('#rname');
+      const rtext = $('#rtext');
+      const reviewsList = $('#reviewsList');
+      const addReviewBtn = $('#addReviewBtn');
+      const clearReviewsBtn = $('#clearReviewsBtn');
 
-    const contactForm = q('#contactForm');
+      // backup
+      const exportBtn = $('#exportBtn');
+      const importFile = $('#importFile');
+      const resetBtn = $('#resetBtn');
 
-    // selected
-    let selectedCategory = null;
+      // contact
+      const ownerName = $('#ownerName');
+      const mailtoBtn = $('#mailtoBtn');
+      const copyMessageBtn = $('#copyMessageBtn');
+      const cname = $('#cname');
+      const cemail = $('#cemail');
+      const cmessage = $('#cmessage');
 
-    // INITIALIZE
-    function init(){
-      bindEvents();
-      setUserUI();
-      renderCategories();
-      renderProducts();
-      renderReviews();
-      ownerNameEl.textContent = ADMIN_USERNAME;
-    }
+      // init
+      function init(){
+        ownerName.textContent = ADMIN_USERNAME;
+        renderSession();
+        renderCategories();
+        renderProducts();
+        renderReviews();
+        attach();
+      }
 
-    // EVENTS
-    function bindEvents(){
-      // tabs
-      tabs.forEach(t=> t.addEventListener('click', ()=>{
+      // --- session handling ---
+      function renderSession(){
+        const user = session.user;
+        displayNameEl.textContent = user || 'guest';
+        const isAdmin = user === ADMIN_USERNAME;
+        adminBadge.style.display = isAdmin ? 'inline-block' : 'none';
+        loginBtn.style.display = user ? 'none' : 'inline-flex';
+        logoutBtn.style.display = user ? 'inline-flex' : 'none';
+        adminProductForm.style.display = isAdmin && selectedCategory ? '' : 'none';
+      }
+      loginBtn.addEventListener('click',()=>{
+        const u = prompt('Enter username to log in:');
+        if(!u) return;
+        session.user = u.trim(); saveSession(session); renderSession();
+      });
+      logoutBtn.addEventListener('click',()=>{ session.user = null; saveSession(session); renderSession(); });
+
+      // --- tabs ---
+      tabs.forEach(t=>t.addEventListener('click',()=>{
         tabs.forEach(x=>x.classList.remove('active'));
         t.classList.add('active');
-        const target = t.dataset.tab;
-        views.forEach(v=> v.style.display = (v.id === target ? 'block' : 'none'));
-        // re-render active view for up-to-date content
-        if(target === 'sales') renderProducts();
-        if(target === 'reviews') renderReviews();
+        const tab = t.dataset.tab;
+        salesTab.style.display = tab==='sales' ? '' : 'none';
+        reviewsTab.style.display = tab==='reviews' ? '' : 'none';
+        contactTab.style.display = tab==='contact' ? '' : 'none';
       }));
 
-      loginBtn.addEventListener('click', handleLogin);
-      logoutBtn.addEventListener('click', ()=>{ clearSession(); setUserUI(); toast('Signed out'); });
-
-      newCategoryBtn.addEventListener('click', createCategoryPrompt);
-
-      addProductForm.addEventListener('submit', handleAddProduct);
-      q('#cancelAddProduct').addEventListener('click', ()=>{ addProductForm.reset(); addProductForm.style.display='none'; });
-
-      q('#exportData').addEventListener('click', exportJSON);
-      q('#importBtn').addEventListener('click', ()=> q('#importFile').click());
-      q('#importFile').addEventListener('change', handleImportFile);
-
-      reviewForm.addEventListener('submit', handleAddReview);
-      q('#clearReviews').addEventListener('click', ()=>{
-        if(!confirm('Clear all reviews?')) return; state.reviews = []; saveState(); renderReviews(); toast('Reviews cleared');
+      // --- categories ---
+      function createCategory(name){ if(!name) return; data.categories.push({id: 'c_' + Date.now(), name, products:[]}); saveData(data); renderCategories(); }
+      newCatBtn.addEventListener('click',()=>{
+        if(session.user !== ADMIN_USERNAME){ alert('Only admin can create categories'); return; }
+        const name = prompt('New category name:'); if(!name) return; createCategory(name.trim());
       });
 
-      q('#copyContact').addEventListener('click', copyContactMsg);
-      contactForm.addEventListener('submit', handleContactSubmit);
-
-      // keyboard accessibility: Enter on categories
-      categoriesList.addEventListener('keydown', (e)=>{ if(e.key === 'Enter'){ const btn = e.target.closest('button'); if(btn) btn.click(); }});
-    }
-
-    // AUTH
-    function handleLogin(){
-      const name = prompt('Enter display username:'); if(!name) return;
-      const isAdmin = name.trim().toLowerCase() === ADMIN_USERNAME.toLowerCase();
-      const sess = { username: name.trim(), isAdmin };
-      saveSession(sess); setUserUI(); toast(`Signed in as ${sess.username}${isAdmin ? ' (admin)' : ''}`);
-    }
-
-    function setUserUI(){
-      const sess = getSession();
-      if(sess && sess.username){ userDisplay.textContent = sess.username; loginBtn.style.display='none'; logoutBtn.style.display='inline-flex'; adminBadge.style.display = sess.isAdmin ? 'inline-block' : 'none'; }
-      else { userDisplay.textContent = 'Not signed in'; loginBtn.style.display='inline-flex'; logoutBtn.style.display='none'; adminBadge.style.display='none'; }
-
-      // admin-only UI toggles
-      const isAdmin = sess && sess.isAdmin;
-      newCategoryBtn.style.display = isAdmin ? 'inline-flex' : 'none';
-      addProductForm.style.display = isAdmin && selectedCategory ? 'block' : 'none';
-    }
-
-    // CATEGORIES
-    function createCategoryPrompt(){
-      const name = prompt('Category name:'); if(!name) return;
-      const id = uid('cat');
-      state.categories.push({id,name});
-      state.products[id] = state.products[id] || [];
-      saveState(); renderCategories(); selectCategory(id); toast('Category created');
-    }
-
-    function renderCategories(){
-      categoriesList.innerHTML = '';
-      if(state.categories.length === 0){
-        categoriesList.innerHTML = '<div style="color:var(--muted)">No categories yet.</div>';
-        return;
-      }
-      state.categories.forEach(cat=>{
-        const b = document.createElement('button'); b.className='item btn'; b.type='button'; b.style.justifyContent='space-between';
-        b.innerHTML = `<div class="meta"><h3>${escapeHtml(cat.name)}</h3><p>${(state.products[cat.id]||[]).length} item(s)</p></div>`;
-        b.addEventListener('click', ()=> selectCategory(cat.id));
-        categoriesList.appendChild(b);
-      });
-    }
-
-    function selectCategory(id){
-      selectedCategory = id;
-      const cat = state.categories.find(c=>c.id===id);
-      selectedCategoryTitle.textContent = cat ? cat.name : 'None';
-      addProductForm.style.display = (getSession() && getSession().isAdmin && cat) ? 'block' : 'none';
-      renderProducts();
-    }
-
-    // PRODUCTS
-    function renderProducts(){
-      productsGrid.innerHTML = '';
-      if(!selectedCategory){
-        // show category cards
-        if(state.categories.length === 0){ productsGrid.innerHTML = '<div style="color:var(--muted)">No categories — create one (admin)</div>'; return; }
-        state.categories.forEach(cat=>{
-          const el = document.createElement('div'); el.className='card item';
-          el.innerHTML = `<div><h4>${escapeHtml(cat.name)}</h4><p>${(state.products[cat.id]||[]).length} item(s)</p></div><div style="display:flex;gap:8px"><button class="btn" data-open>Open</button></div>`;
-          el.querySelector('[data-open]').addEventListener('click', ()=> selectCategory(cat.id));
-          productsGrid.appendChild(el);
+      function renderCategories(){
+        categoriesList.innerHTML = '';
+        if(data.categories.length===0){ categoriesList.innerHTML = '<div class="muted">No categories yet</div>'; selectedCategory=null; selectedCatName.textContent='No category selected'; selectedCatInfo.textContent='Create one using the New button (admin only).'; renderProducts(); return; }
+        data.categories.forEach(cat=>{
+          const b = document.createElement('button'); b.className='cat-btn'; b.textContent=cat.name; b.addEventListener('click',()=>{ selectCategory(cat.id); });
+          if(selectedCategory===cat.id) b.classList.add('active');
+          categoriesList.appendChild(b);
         });
-        return;
       }
-      const prods = state.products[selectedCategory] || [];
-      if(prods.length === 0) { productsGrid.innerHTML = '<div style="color:var(--muted)">No products in this category yet.</div>'; return; }
 
-      prods.forEach(p=>{
-        const card = document.createElement('div'); card.className='card';
-        card.innerHTML = `<h4>${escapeHtml(p.name)}</h4><p>${escapeHtml(p.desc)}</p><div class="meta"><div class="chip">${Number(p.cost).toLocaleString()}</div><div style="margin-left:auto;color:var(--muted);font-size:.85rem">${timeAgo(new Date(p.createdAt))}</div></div>`;
+      function selectCategory(id){ selectedCategory=id; const cat = data.categories.find(c=>c.id===id); selectedCatName.textContent = cat ? cat.name : '—'; selectedCatInfo.textContent = cat ? (cat.products.length + ' product(s)') : '';
+        renderCategories(); renderProducts(); const isAdmin = session.user===ADMIN_USERNAME; adminProductForm.style.display = isAdmin ? '' : 'none'; }
 
-        const actions = document.createElement('div'); actions.style.display='flex'; actions.style.gap='8px'; actions.style.marginTop='10px';
-        const open = document.createElement('a'); open.className='btn'; open.textContent='Open offer'; open.href=p.link; open.target='_blank'; actions.appendChild(open);
-        const copy = document.createElement('button'); copy.className='btn ghost'; copy.textContent='Copy link'; copy.addEventListener('click', ()=>copyToClipboard(p.link)); actions.appendChild(copy);
-
-        const sess = getSession(); if(sess && sess.isAdmin){
-          const del = document.createElement('button'); del.className='btn ghost'; del.textContent='Delete'; del.addEventListener('click', ()=>{ if(!confirm('Delete product?')) return; state.products[selectedCategory] = state.products[selectedCategory].filter(x=>x.id!==p.id); saveState(); renderProducts(); toast('Product deleted'); });
-          actions.appendChild(del);
-        }
-
-        card.appendChild(actions);
-        productsGrid.appendChild(card);
+      // --- products ---
+      addProductBtn.addEventListener('click',()=>{
+        if(session.user !== ADMIN_USERNAME){ alert('Only admin can add products'); return; }
+        const cat = data.categories.find(c=>c.id===selectedCategory);
+        if(!cat){ alert('Select a category first'); return; }
+        const name = $('#pname').value.trim(); const desc = $('#pdesc').value.trim(); const cost = parseFloat($('#pcost').value) || 0; const link = $('#plink').value.trim();
+        if(!name) { alert('Product needs a name'); return; }
+        const product = { id: 'p_'+Date.now(), name, desc, cost, link, added: nowISO() };
+        cat.products.unshift(product); saveData(data); renderProducts(); addProductForm.reset();
       });
-    }
+      clearProductForm.addEventListener('click',()=>addProductForm.reset());
 
-    function handleAddProduct(e){
-      e.preventDefault();
-      const sess = getSession(); if(!sess || !sess.isAdmin){ toast('Admin only'); return; }
-      if(!selectedCategory){ toast('Select a category first'); return; }
-      const name = addProductInputs.name.value.trim();
-      const desc = addProductInputs.desc.value.trim();
-      const cost = parseFloat(addProductInputs.cost.value);
-      const link = addProductInputs.link.value.trim();
-      if(!name || !desc || isNaN(cost) || !link){ toast('Check product details'); return; }
-      const p = { id: uid('prod'), name, desc, cost, link, createdAt: nowISO() };
-      state.products[selectedCategory] = state.products[selectedCategory] || [];
-      state.products[selectedCategory].push(p);
-      saveState(); addProductForm.reset(); renderProducts(); toast('Product added');
-    }
+      function renderProducts(){ productsGrid.innerHTML = '';
+        const cat = data.categories.find(c=>c.id===selectedCategory);
+        if(!cat){ productsGrid.innerHTML = '<div class="muted">No category selected</div>'; return; }
+        if(cat.products.length===0){ productsGrid.innerHTML = '<div class="muted">No products yet — add one using the form above (admin)</div>'; return; }
+        cat.products.forEach(prod=>{
+          const pc = document.createElement('div'); pc.className='product-card';
+          pc.innerHTML = `<div class="p-title">${escapeHtml(prod.name)}</div>
+                          <div class="p-desc">${escapeHtml(prod.desc || '')}</div>
+                          <div class="p-meta"><div>Cost: $${Number(prod.cost).toFixed(2)}</div><div class="muted">${formatDate(prod.added)}</div></div>`;
+          const actions = document.createElement('div'); actions.className='p-actions';
+          const openBtn = document.createElement('button'); openBtn.className='pill'; openBtn.textContent='Open offer'; openBtn.addEventListener('click',()=>{ if(prod.link) window.open(prod.link,'_blank'); else alert('No link provided'); });
+          const copyBtn = document.createElement('button'); copyBtn.className='pill'; copyBtn.textContent='Copy link'; copyBtn.addEventListener('click',()=>{ const txt = prod.link || location.href; navigator.clipboard.writeText(txt).then(()=>{ alert('Link copied to clipboard'); }).catch(()=>{ alert('Copy failed — your browser may block clipboard access'); }); });
+          actions.appendChild(openBtn); actions.appendChild(copyBtn);
+          if(session.user === ADMIN_USERNAME){ const del = document.createElement('button'); del.className='pill'; del.textContent='Delete'; del.addEventListener('click',()=>{ if(confirm('Delete this product?')){ cat.products = cat.products.filter(p=>p.id!==prod.id); saveData(data); renderProducts(); } }); actions.appendChild(del); }
+          pc.appendChild(actions);
+          productsGrid.appendChild(pc);
+        });
+      }
 
-    // REVIEWS
-    function handleAddReview(e){
-      e.preventDefault();
-      const name = q('#reviewerName').value.trim();
-      const text = q('#reviewText').value.trim();
-      if(!name || !text) return;
-      state.reviews.unshift({ id: uid('rev'), name, text, createdAt: nowISO() });
-      saveState(); reviewForm.reset(); renderReviews(); toast('Review added');
-    }
-
-    function renderReviews(){
-      reviewsList.innerHTML = '';
-      if(state.reviews.length === 0){ reviewsList.innerHTML = '<div style="color:var(--muted)">No reviews yet.</div>'; return; }
-      state.reviews.forEach(r=>{
-        const c = document.createElement('div'); c.className='item card';
-        c.innerHTML = `<div><strong>${escapeHtml(r.name)}</strong><div style="color:var(--muted);font-size:.86rem">${timeAgo(new Date(r.createdAt))}</div><div style="margin-top:8px;color:var(--muted)">${escapeHtml(r.text)}</div></div>`;
-        reviewsList.appendChild(c);
+      // --- reviews ---
+      addReviewBtn.addEventListener('click',()=>{
+        const name = rname.value.trim(); const text = rtext.value.trim(); if(!name||!text) return alert('Fill name and review');
+        data.reviews.unshift({id:'r_'+Date.now(), name, text, date: nowISO()}); saveData(data); renderReviews(); reviewForm.reset();
       });
-    }
+      clearReviewsBtn.addEventListener('click',()=>{ if(!confirm('Clear all reviews?')) return; data.reviews=[]; saveData(data); renderReviews(); });
 
-    // CONTACT
-    function handleContactSubmit(e){
-      e.preventDefault();
-      const name = q('#contactName').value.trim(); const email = q('#contactEmail').value.trim(); const msg = q('#contactMessage').value.trim();
-      if(!name || !msg){ toast('Name and message required'); return; }
-      const subject = encodeURIComponent('W-Shop message from ' + name);
-      let body = `From: ${name}\n` + (email? `Email: ${email}\n\n`: '\n') + msg;
-      const mailto = `mailto:${OWNER_EMAIL}?subject=${subject}&body=${encodeURIComponent(body)}`;
-      window.location.href = mailto;
-    }
+      function renderReviews(){ reviewsList.innerHTML=''; if(!data.reviews||data.reviews.length===0){ reviewsList.innerHTML='<div class="muted">No reviews yet</div>'; return; }
+        data.reviews.forEach(r=>{
+          const div = document.createElement('div'); div.className='review-card'; div.innerHTML = `<div class="reviewer">${escapeHtml(r.name)}</div><div class="r-date">${formatDate(r.date)}</div><div style="margin-top:6px">${escapeHtml(r.text)}</div>`; reviewsList.appendChild(div);
+        });
+      }
 
-    function copyContactMsg(){
-      const name = q('#contactName').value.trim() || 'Anonymous'; const emailVal = q('#contactEmail').value.trim(); const msg = q('#contactMessage').value.trim() || '';
-      const content = `To: ${OWNER_EMAIL}\nFrom: ${name}\n${emailVal ? ('Email: '+emailVal+'\n') : ''}\n${msg}`;
-      copyToClipboard(content);
-    }
+      // --- backup / import / reset ---
+      exportBtn.addEventListener('click',()=>{
+        const content = {data, session}; const blob = new Blob([JSON.stringify(content,null,2)],{type:'application/json'});
+        const url = URL.createObjectURL(blob); const a = document.createElement('a'); a.href=url; a.download='wshop-backup.json'; document.body.appendChild(a); a.click(); a.remove(); URL.revokeObjectURL(url);
+      });
+      importFile.addEventListener('change', async (e)=>{
+        const f = e.target.files[0]; if(!f) return; try{ const text = await f.text(); const parsed = JSON.parse(text); if(parsed.data) { data = parsed.data; session = parsed.session||{user:null}; saveData(data); saveSession(session); selectedCategory = null; renderCategories(); renderProducts(); renderReviews(); renderSession(); alert('Import successful'); } else { alert('Invalid backup format'); } }catch(err){ alert('Import failed: '+err); }
+        importFile.value='';
+      });
+      resetBtn.addEventListener('click',()=>{ if(!confirm('Clear all local data? This cannot be undone.')) return; data={categories:[],reviews:[]}; session={user:null}; saveData(data); saveSession(session); selectedCategory=null; renderCategories(); renderProducts(); renderReviews(); renderSession(); });
 
-    // IMPORT/EXPORT
-    function exportJSON(){
-      const blob = new Blob([JSON.stringify(state, null, 2)], {type:'application/json'});
-      const url = URL.createObjectURL(blob); const a = document.createElement('a'); a.href=url; a.download = 'wshop_backup_'+Date.now()+'.json'; document.body.appendChild(a); a.click(); a.remove(); URL.revokeObjectURL(url); toast('Export created');
-    }
+      // --- contact ---
+      mailtoBtn.addEventListener('click',()=>{
+        const to = ''; // owner email not provided — leave blank so mail client lets user set
+        const subject = encodeURIComponent('Message to w-shop owner');
+        const body = encodeURIComponent('From: '+cname.value+'\nEmail: '+cemail.value+'\n\n'+cmessage.value);
+        const href = `mailto:${to}?subject=${subject}&body=${body}`;
+        window.location.href = href;
+      });
+      copyMessageBtn.addEventListener('click',()=>{
+        const text = `From: ${cname.value}\nEmail: ${cemail.value}\n\n${cmessage.value}`;
+        navigator.clipboard.writeText(text).then(()=>alert('Message copied')).catch(()=>alert('Copy failed'));
+      });
 
-    function handleImportFile(e){
-      const f = e.target.files[0]; if(!f) return; const reader = new FileReader(); reader.onload = function(){ try{ const imported = safeJSONParse(reader.result, null); if(!imported) throw new Error('Invalid JSON'); if(!confirm('Import will replace current shop data. Continue?')) return; state = Object.assign({}, defaults, imported); saveState(); renderCategories(); renderProducts(); renderReviews(); toast('Import successful'); }catch(err){ alert('Invalid JSON'); }}; reader.readAsText(f);
-    }
+      // --- helpers ---
+      function escapeHtml(str){ if(!str) return ''; return str.replace(/[&<>\"]/g, c=>({ '&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;' }[c])); }
 
-    // HELPERS
-    function escapeHtml(s){ if(!s) return ''; return String(s).replace(/[&<>\"']/g, ch => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":"&#39;"})[ch]); }
-    function copyToClipboard(text){ navigator.clipboard?.writeText(text).then(()=>toast('Copied to clipboard')).catch(()=>{ prompt('Copy fallback — press Ctrl/Cmd+C to copy:', text); }); }
-    function timeAgo(d){ const s = Math.floor((Date.now() - d.getTime())/1000); if(s<60) return s+'s ago'; if(s<3600) return Math.floor(s/60)+'m ago'; if(s<86400) return Math.floor(s/3600)+'h ago'; return d.toLocaleDateString(); }
+      function attach(){
+        // keyboard shortcut: ctrl+shift+a to toggle admin login prompt (convenience)
+        document.addEventListener('keydown',e=>{ if(e.ctrlKey && e.shiftKey && e.key.toLowerCase()==='a'){ loginBtn.click(); } });
+      }
 
-    // on load
-    init();
+      // expose data to window for debugging when running locally
+      window.__wshop = {getData:()=>JSON.parse(JSON.stringify(data)), save:()=>saveData(data)};
 
-    // expose for debugging (optional)
-    window.__WSHOP = { state, saveState };
-  })();
+      init();
+    })();
   </script>
 </body>
 </html>

@@ -1,530 +1,666 @@
 <!doctype html>
 <html lang="en">
 <head>
-<meta charset="utf-8" />
-<meta name="viewport" content="width=device-width,initial-scale=1" />
-<title>W-Shop — Stock Sales & Reviews</title>
-<style>
-  :root{
-    --bg:#0f1724; --card:#0b1220; --muted:#9aa7b7; --accent:#7dd3fc;
-    --accent-2:#60a5fa; --success:#34d399; --danger:#fb7185;
-  }
-  html,body{height:100%;margin:0;font-family:Inter,ui-sans-serif,system-ui,Segoe UI,Roboto,"Helvetica Neue",Arial;}
-  body{background:linear-gradient(180deg,#071029 0%, #091826 100%); color:#e6eef6; display:flex; align-items:flex-start; justify-content:center; padding:28px;}
-  .container{width:100%; max-width:1024px;}
-  header{display:flex;align-items:center;justify-content:space-between;margin-bottom:18px}
-  header h1{margin:0;font-size:20px;letter-spacing:0.4px}
-  header .controls{display:flex;gap:8px;align-items:center}
-  button, .btn{background:linear-gradient(180deg,var(--accent) 0%, var(--accent-2) 100%); color:#022; border:none; padding:8px 12px;border-radius:8px; cursor:pointer; font-weight:600;}
-  .muted{color:var(--muted); font-size:14px}
-  .tabs{display:flex; gap:8px; margin-bottom:12px}
-  .tab{padding:10px 12px;border-radius:10px;background:rgba(255,255,255,0.02); cursor:pointer}
-  .tab.active{background:linear-gradient(180deg,#042133 0%, #0a2a40 100%); box-shadow:0 6px 18px rgba(5,40,60,0.6)}
-  .grid{display:grid; grid-template-columns: repeat(auto-fit,minmax(260px,1fr)); gap:12px}
-  .card{background:linear-gradient(180deg, rgba(255,255,255,0.02), rgba(255,255,255,0.01)); padding:12px;border-radius:12px; border:1px solid rgba(255,255,255,0.03)}
-  .product-title{font-weight:700;margin:0 0 6px 0}
-  .small{font-size:13px;color:var(--muted)}
-  form{display:flex;flex-direction:column; gap:8px}
-  input[type=text], input[type=url], input[type=number], textarea, select{
-    background:transparent;border:1px solid rgba(255,255,255,0.06); color:inherit; padding:8px;border-radius:8px;
-  }
-  textarea{min-height:80px; resize:vertical}
-  .row{display:flex; gap:8px}
-  .row .flex{flex:1}
-  .actions{display:flex; gap:8px; margin-top:8px}
-  .small-muted{font-size:12px;color:var(--muted)}
-  .meta{display:flex;gap:8px;align-items:center}
-  .badge{background:rgba(255,255,255,0.03);padding:6px 8px;border-radius:8px;font-size:13px}
-  .danger{background:linear-gradient(180deg,#ff6b6b,#ff4d6d); color:white}
-  .success{background:linear-gradient(180deg,#34d399,#10b981); color:#042217}
-  footer{margin-top:14px;color:var(--muted); font-size:13px; text-align:center}
-  .center{display:flex;align-items:center;justify-content:center}
-  .tiny{font-size:12px;color:var(--muted)}
-  .flexrow{display:flex;align-items:center;gap:8px}
-  .inline{display:inline-block}
-  a.link{color:var(--accent); text-decoration:none}
-  .hidden{display:none}
-  .review{border-left:3px solid rgba(125,211,252,0.08); padding-left:10px}
-  .topbar{display:flex;gap:8px;align-items:center}
-  .admin-label{background:#063241;padding:6px 8px;border-radius:8px;color:var(--accent);font-weight:700}
-  .export-btn{background:transparent;border:1px dashed rgba(255,255,255,0.06); padding:6px 8px;border-radius:8px;color:var(--muted)}
-</style>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial‐scale=1" />
+  <title>W‑Shop — Stock Sales & Reviews</title>
+  <style>
+    :root {
+      --bg: #0c111c;
+      --card: #131a2b;
+      --muted: #8596a5;
+      --accent: #60c9f6;
+      --accent‐darker: #3ea4d9;
+      --success: #3edfa3;
+      --danger: #ff6e7a;
+      --radius: 8px;
+      --spacing: 1.5rem;
+      --font: "Inter", ui‑sans‑serif, system-ui, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+    }
+    html, body {
+      height: 100%;
+      margin: 0;
+      font-family: var(--font);
+      background: radial-gradient(circle at top left, #07102a 0%, #0b1522 100%);
+      color: #e6eef6;
+      display: flex;
+      justify-content: center;
+      padding: var(--spacing);
+    }
+    .container {
+      width: 100%;
+      max-width: 960px;
+    }
+    header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: var(--spacing);
+    }
+    header h1 {
+      margin: 0;
+      font-size: 2rem;
+      letter-spacing: 0.4px;
+    }
+    header .tiny {
+      font-size: 0.875rem;
+      color: var(--muted);
+    }
+    .controls {
+      display: flex;
+      align-items: center;
+      gap: 1rem;
+    }
+    button, .btn {
+      background: linear-gradient(180deg, var(--accent) 0%, var(--accent‐darker) 100%);
+      color: #022;
+      border: none;
+      padding: 0.75rem 1.25rem;
+      border-radius: var(--radius);
+      cursor: pointer;
+      font-weight: 600;
+      font-size: 0.9rem;
+      transition: background 0.3s;
+    }
+    button:hover, .btn:hover {
+      background: linear-gradient(180deg, var(--accent‐darker) 0%, var(--accent) 100%);
+    }
+    .muted { color: var(--muted); }
+    .tabs {
+      display: flex;
+      gap: 1rem;
+      margin-bottom: var(--spacing);
+      border-bottom: 1px solid #163146;
+    }
+    .tab {
+      padding: 0.75rem 1rem;
+      cursor: pointer;
+      border-radius: var(--radius);
+      background: transparent;
+      font-size: 1rem;
+      color: #cfd8e1;
+      transition: background 0.3s, color 0.3s;
+    }
+    .tab.active {
+      color: #ffffff;
+      background: linear-gradient(180deg, #043047 0%, #0c3351 100%);
+      box-shadow: 0 6px 18px rgba(5, 40, 60, 0.6);
+    }
+    main {
+      margin-bottom: var(--spacing);
+    }
+    section {
+      display: none;
+    }
+    section.active {
+      display: block;
+    }
+    .grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(240px,1fr));
+      gap: var(--spacing);
+    }
+    .card {
+      background: var(--card);
+      padding: var(--spacing);
+      border-radius: var(--radius);
+      border: 1px solid rgba(255,255,255,0.05);
+    }
+    .product-title {
+      font-weight: 700;
+      margin: 0 0 0.5rem;
+      font-size: 1.25rem;
+    }
+    .small {
+      font-size: 0.875rem;
+      color: var(--muted);
+    }
+    form {
+      display: flex;
+      flex-direction: column;
+      gap: 0.75rem;
+    }
+    input[type=text], input[type=url], input[type=number], textarea, select {
+      background: transparent;
+      border: 1px solid rgba(255,255,255,0.08);
+      color: inherit;
+      padding: 0.75rem;
+      border-radius: var(--radius);
+      font-size: 0.9rem;
+    }
+    textarea {
+      min-height: 100px;
+      resize: vertical;
+    }
+    .row {
+      display: flex;
+      gap: 0.75rem;
+    }
+    .row .flex {
+      flex: 1;
+    }
+    .actions {
+      display: flex;
+      gap: 0.75rem;
+      margin-top: 0.75rem;
+    }
+    .small-muted {
+      font-size: 0.75rem;
+      color: var(--muted);
+    }
+    .meta {
+      display: flex;
+      gap: 0.75rem;
+      align-items: center;
+      margin-top: 0.5rem;
+    }
+    .badge {
+      background: rgba(255,255,255,0.05);
+      padding: 0.5rem 0.75rem;
+      border-radius: var(--radius);
+      font-size: 0.875rem;
+    }
+    .footer {
+      text-align: center;
+      font-size: 0.75rem;
+      color: var(--muted);
+      margin-top: var(--spacing);
+    }
+    .hidden { display: none !important; }
+    /* subtle hover “floating” effect for cards */
+    .card:hover {
+      transform: translateY(-4px);
+      box-shadow: 0 12px 24px rgba(0,0,0,0.4);
+      transition: transform 0.3s, box-shadow 0.3s;
+    }
+  </style>
 </head>
 <body>
-<div class="container" id="app">
-  <header>
-    <div>
-      <h1>W‑Shop</h1>
-      <div class="tiny muted">Stock sales • reviews</div>
-    </div>
-    <div class="controls">
-      <div class="topbar">
-        <div id="user-display" class="muted tiny">not logged in</div>
-        <div id="admin-badge" class="admin-label hidden">ADMIN</div>
+  <div class="container" id="app">
+    <header>
+      <div>
+        <h1>W‑Shop</h1>
+        <div class="tiny muted">Stock Sales • Reviews</div>
       </div>
-      <button id="loginBtn" class="btn">Login</button>
-      <button id="logoutBtn" class="btn hidden">Logout</button>
-    </div>
-  </header>
+      <div class="controls">
+        <div>
+          <span id="user-display" class="tiny muted">not logged in</span>
+          <span id="admin-badge" class="tiny admin-label hidden">ADMIN</span>
+        </div>
+        <button id="loginBtn" class="btn">Login</button>
+        <button id="logoutBtn" class="btn hidden">Logout</button>
+      </div>
+    </header>
 
-  <div class="tabs" role="tablist">
-    <div class="tab active" data-tab="sales">Stock Sales</div>
-    <div class="tab" data-tab="reviews">Reviews</div>
-    <div class="tab" data-tab="contact">Contact</div>
+    <div class="tabs" role="tablist">
+      <div class="tab active" data-tab="sales">Sales</div>
+      <div class="tab" data-tab="reviews">Reviews</div>
+      <div the="tab" data-tab="contact">Contact</div>
+    </div>
+
+    <main>
+      <section id="sales" class="active">
+        <div class="row" style="margin-bottom: var(--spacing);">
+          <div style="flex:1">
+            <div class="card">
+              <div style="display:flex;justify-content:space-between;align-items:center">
+                <div>
+                  <strong>Categories</strong>
+                  <div class="small-muted">Browse or create categories (admin only)</div>
+                </div>
+                <div>
+                  <button id="newCategoryBtn" class="btn hidden">+ New Category</button>
+                </div>
+              </div>
+              <div id="categoriesList" style="margin-top: var(--spacing / 2)"></div>
+            </div>
+          </div>
+          <div style="width:300px">
+            <div class="card">
+              <strong>Selected category</strong>
+              <div id="selectedCategoryTitle" class="small-muted">None</div>
+              <div id="addProductFormWrap" class="hidden" style="margin-top: var(--spacing / 2)">
+                <form id="addProductForm">
+                  <input type="text" id="prodName" placeholder="Product name" required />
+                  <textarea id="prodDesc" placeholder="Description" required></textarea>
+                  <div class="row">
+                    <input type="number" id="prodCost" class="flex" placeholder="Cost" required min="0" step="any" />
+                    <input type="url" id="prodLink" class="flex" placeholder="Offer link (https://...)" required />
+                  </div>
+                  <div class="actions">
+                    <button type="submit" class="btn">Add product</button>
+                    <button id="cancelAddProduct" type="button" class="btn" style="background: transparent; border: 1px dashed rgba(255,255,255,0.06); color: var(--muted);">Cancel</button>
+                  </div>
+                </form>
+              </div>
+              <div id="noCategoryMessage" class="small-muted" style="margin-top: var(--spacing / 2)">
+                Select a category to see products. (Admin: create categories.)
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div id="productsArea">
+          <div class="grid" id="productsGrid"></div>
+        </div>
+      </section>
+
+      <section id="reviews">
+        <div class="row" style="margin-bottom: var(--spacing);">
+          <div class="card" style="flex:1">
+            <strong>Leave a review</strong>
+            <div class="small-muted">Your review will appear below (stored locally).</div>
+            <form id="addReviewForm" style="margin-top: var(--spacing / 2)">
+              <input type="text" id="reviewerName" placeholder="Your name" required />
+              <textarea id="reviewText" placeholder="Your review" required></textarea>
+              <div class="actions">
+                <button class="btn">Add review</button>
+                <button id="clearReviews" type="button" class="btn" style="background: transparent; border: 1px dashed rgba(255,255,255,0.06); color: var(--muted);">Clear all reviews</button>
+              </div>
+            </form>
+          </div>
+          <div style="width:260px">
+            <div class="card">
+              <strong>Backup / Import</strong>
+              <div class="small-muted">Export or import your data.</div>
+              <div style="margin-top: var(--spacing / 2)">
+                <button id="exportData" class="btn" style="background: transparent; border: 1px dashed rgba(255,255,255,0.06); color: var(--muted);">Export JSON</button>
+                <input id="importFile" type="file" accept="application/json" style="margin-top: 0.75rem; font-size:0.9rem; background:transparent; color:inherit; border:none;" />
+              </div>
+            </div>
+          </div>
+        </div>
+        <div id="reviewsList"></div>
+      </section>
+
+      <section id="contact">
+        <div class="grid">
+          <div class="card">
+            <strong>Contact owner</strong>
+            <div class="small-muted">Open your email client or copy message to clipboard.</div>
+            <form id="contactForm" style="margin-top: var(--spacing / 2)">
+              <input id="contactName" type="text" placeholder="Your name" required />
+              <input id="contactEmail" type="text" placeholder="Your email (optional)" />
+              <textarea id="contactMessage" placeholder="Message" required></textarea>
+              <div class="actions">
+                <button class="btn" type="submit">Open email</button>
+                <button id="copyContact" type="button" class="btn" style="background: transparent; border: 1px dashed rgba(255,255,255,0.06); color: var(--muted);">Copy message</button>
+              </div>
+            </form>
+          </div>
+          <div class="card">
+            <strong>Owner info</strong>
+            <div class="small-muted" style="margin-top: 0.5rem;">Owner / admin: <span id="ownerName"></span></div>
+            <div class="small-muted" style="margin-top: 0.75rem;">To become admin: log in with admin username (local session only).</div>
+          </div>
+        </div>
+      </section>
+    </main>
+
+    <div class="footer">
+      Prototype — data stored locally on your browser.
+    </div>
   </div>
 
-  <main>
-    <section id="sales" class="tabpanel">
-      <div class="row" style="margin-bottom:12px">
-        <div style="flex:1">
-          <div class="card">
-            <div style="display:flex;justify-content:space-between;align-items:center">
-              <div>
-                <strong>Categories</strong>
-                <div class="small-muted">Browse or create categories (admin only)</div>
-              </div>
-              <div>
-                <button id="newCategoryBtn" class="btn hidden">+ New Category</button>
-              </div>
-            </div>
-            <div style="margin-top:10px" id="categoriesList"></div>
-          </div>
-        </div>
-        <div style="width:360px">
-          <div class="card">
-            <strong>Selected category</strong>
-            <div id="selectedCategoryTitle" class="small-muted">None</div>
-            <div style="margin-top:10px" id="addProductFormWrap" class="hidden">
-              <form id="addProductForm">
-                <input type="text" id="prodName" placeholder="Product name" required />
-                <textarea id="prodDesc" placeholder="Description" required></textarea>
-                <div class="row">
-                  <input type="number" id="prodCost" class="flex" placeholder="Cost (number)" required min="0" step="any" />
-                  <input type="url" id="prodLink" class="flex" placeholder="FunPay / offer link (https://...)" required />
-                </div>
-                <div class="actions">
-                  <button type="submit" class="btn">Add product</button>
-                  <button id="cancelAddProduct" type="button" class="export-btn">Cancel</button>
-                </div>
-              </form>
-            </div>
+  <script>
+    /* config */
+    const ADMIN_USERNAME = "whitte5219";
+    const OWNER_EMAIL = "youremail@example.com";
+    const APP_STORAGE_KEY = "wshop_data_v1";
 
-            <div id="noCategoryMessage" class="small-muted" style="margin-top:10px">Select a category to see products. (Admin: create categories.)</div>
-          </div>
-        </div>
-      </div>
+    const defaults = {
+      categories: [],
+      products: {},
+      reviews: []
+    };
+    let state = loadState();
 
-      <div id="productsArea">
-        <div class="grid" id="productsGrid"></div>
-      </div>
-
-    </section>
-
-    <section id="reviews" class="tabpanel hidden">
-      <div class="row" style="margin-bottom:12px">
-        <div class="card" style="flex:1">
-          <strong>Leave a review</strong>
-          <div class="small-muted">Your review will appear below (stored locally).</div>
-          <form id="addReviewForm" style="margin-top:8px">
-            <input type="text" id="reviewerName" placeholder="Your name" required />
-            <textarea id="reviewText" placeholder="Your review" required></textarea>
-            <div class="actions">
-              <button class="btn">Add review</button>
-              <button id="clearReviews" type="button" class="export-btn">Clear all reviews</button>
-            </div>
-          </form>
-        </div>
-        <div style="width:220px" class="card">
-          <strong>Reviews backup</strong>
-          <div class="small-muted">Export/import review & shop data</div>
-          <div style="margin-top:8px">
-            <button id="exportData" class="export-btn">Export JSON</button>
-            <input id="importFile" type="file" accept="application/json" style="margin-top:8px" />
-          </div>
-        </div>
-      </div>
-
-      <div id="reviewsList"></div>
-    </section>
-
-    <section id="contact" class="tabpanel hidden">
-      <div class="grid">
-        <div class="card">
-          <strong>Contact owner</strong>
-          <div class="small-muted">Send a message that opens in your email client or copy it to clipboard.</div>
-          <form id="contactForm" style="margin-top:8px">
-            <input id="contactName" type="text" placeholder="Your name" required />
-            <input id="contactEmail" type="text" placeholder="Your email (optional)" />
-            <textarea id="contactMessage" placeholder="Message" required></textarea>
-            <div class="actions">
-              <button class="btn" type="submit">Open email</button>
-              <button id="copyContact" type="button" class="export-btn">Copy message</button>
-            </div>
-          </form>
-        </div>
-        <div class="card">
-          <strong>Owner info</strong>
-          <div class="small-muted" style="margin-top:6px">Owner username (admin): <span id="ownerName"></span></div>
-          <div style="margin-top:10px" class="small-muted">If you want to be admin, log in with the admin username on the left (in this prototype admin recognition is local to the browser).</div>
-        </div>
-      </div>
-    </section>
-  </main>
-
-  <footer>
-    <div class="tiny">Prototype — data stored locally on your browser.</div>
-  </footer>
-</div>
-
-<script>
-/*
-  W-Shop single-file prototype
-  - Uses localStorage under key "wshop_data_v1"
-  - Admin recognition: configured via ADMIN_USERNAME below. Logging in with that username on this browser grants admin UI.
-  - To improve: replace login with OAuth (requires server or third-party identity provider).
-*/
-
-/* ----- CONFIGURE HERE ----- */
-const ADMIN_USERNAME = "whitte5219"; // the GitHub / display name you want to be the admin (change)
-const OWNER_EMAIL = "youremail@example.com"; // used by contact -> mailto (replace)
-const APP_STORAGE_KEY = "wshop_data_v1";
-/* --------------------------- */
-
-const defaults = {
-  categories: [],
-  products: {}, // categoryId -> [products]
-  reviews: []
-};
-
-let state = loadState();
-
-function loadState(){
-  try{
-    const raw = localStorage.getItem(APP_STORAGE_KEY);
-    if(!raw) return JSON.parse(JSON.stringify(defaults));
-    const parsed = JSON.parse(raw);
-    // simple migration safety
-    return Object.assign({}, defaults, parsed);
-  }catch(e){
-    console.error("loadState", e);
-    return JSON.parse(JSON.stringify(defaults));
-  }
-}
-function saveState(){
-  localStorage.setItem(APP_STORAGE_KEY, JSON.stringify(state));
-}
-
-/* ----- Simple local "auth" ----- */
-/*
-  This is a convenience: it stores a local 'session' object in localStorage under "wshop_session".
-  The page can "recognize" a user on the same device/browser. It is NOT secure cross-device.
-*/
-const SESSION_KEY = "wshop_session";
-function getSession(){
-  try{ return JSON.parse(localStorage.getItem(SESSION_KEY)); }catch(e){ return null; }
-}
-function saveSession(sess){ localStorage.setItem(SESSION_KEY, JSON.stringify(sess)); }
-function clearSession(){ localStorage.removeItem(SESSION_KEY); }
-
-function setUserUI(){
-  const sess = getSession();
-  const display = document.getElementById("user-display");
-  const adminBadge = document.getElementById("admin-badge");
-  const loginBtn = document.getElementById("loginBtn");
-  const logoutBtn = document.getElementById("logoutBtn");
-  if(sess && sess.username){
-    display.textContent = sess.username;
-    loginBtn.classList.add("hidden");
-    logoutBtn.classList.remove("hidden");
-    if(sess.isAdmin) adminBadge.classList.remove("hidden"); else adminBadge.classList.add("hidden");
-  }else{
-    display.textContent = "not logged in";
-    loginBtn.classList.remove("hidden");
-    logoutBtn.classList.add("hidden");
-    adminBadge.classList.add("hidden");
-  }
-  renderAdminUI();
-}
-
-/* ----- UI wiring ----- */
-document.addEventListener("DOMContentLoaded", ()=>{
-  // tabs
-  document.querySelectorAll(".tab").forEach(t=>{
-    t.addEventListener("click", ()=> {
-      document.querySelectorAll(".tab").forEach(x=>x.classList.remove("active"));
-      t.classList.add("active");
-      const target = t.getAttribute("data-tab");
-      document.querySelectorAll(".tabpanel").forEach(tp=>tp.classList.add("hidden"));
-      document.getElementById(target).classList.remove("hidden");
-      if(target === "sales") renderProducts();
-      if(target === "reviews") renderReviews();
-      if(target === "contact") document.getElementById("ownerName").textContent = ADMIN_USERNAME;
-    });
-  });
-
-  // login/logout
-  document.getElementById("loginBtn").addEventListener("click", showLoginPrompt);
-  document.getElementById("logoutBtn").addEventListener("click", ()=>{
-    clearSession(); setUserUI();
-  });
-
-  document.getElementById("newCategoryBtn").addEventListener("click", createCategoryPrompt);
-  document.getElementById("addProductForm").addEventListener("submit", handleAddProduct);
-  document.getElementById("cancelAddProduct").addEventListener("click", ()=>{
-    hideAddProductForm();
-  });
-
-  document.getElementById("addReviewForm").addEventListener("submit", handleAddReview);
-  document.getElementById("clearReviews").addEventListener("click", ()=>{
-    if(!confirm("Clear ALL reviews? This cannot be undone on this device.")) return;
-    state.reviews = []; saveState(); renderReviews();
-  });
-
-  document.getElementById("exportData").addEventListener("click", exportJSON);
-  document.getElementById("importFile").addEventListener("change", handleImportFile);
-
-  document.getElementById("contactForm").addEventListener("submit", handleContactSubmit);
-  document.getElementById("copyContact").addEventListener("click", copyContactMsg);
-
-  // initial render
-  setUserUI();
-  renderCategories();
-  renderProducts();
-  renderReviews();
-});
-
-/* ----- Admin UI toggles ----- */
-function renderAdminUI(){
-  const sess = getSession();
-  const admin = sess && sess.isAdmin;
-  // Show/hide admin controls
-  document.getElementById("newCategoryBtn").classList.toggle("hidden", !admin);
-  document.getElementById("addProductFormWrap").classList.toggle("hidden", !admin);
-}
-
-/* ----- Login prompt (simple) ----- */
-function showLoginPrompt(){
-  const username = prompt("Enter your display username (this page's local recognition will remember you on this browser):");
-  if(!username) return;
-  let isAdmin = false;
-  // simple admin rule: match ADMIN_USERNAME (case-insensitive)
-  if(username.trim().toLowerCase() === (ADMIN_USERNAME || "").toLowerCase()){
-    // optional secret confirmation so accidental name doesn't give rights
-    const secret = prompt("Enter admin secret (leave blank if you haven't set one). If you don't know, leave blank.");
-    // if secret left blank -> still allow admin on this prototype (but can be changed)
-    // For extra safety you can set a secret (see below how to configure)
-    // We'll consider blank secret as OK to match — change logic if you want secret required.
-    isAdmin = true;
-  }
-  const sess = { username: username.trim(), isAdmin };
-  saveSession(sess);
-  setUserUI();
-  alert("Logged in as " + username + (isAdmin ? " (admin)" : ""));
-}
-
-/* ----- Categories & products ----- */
-function createCategoryPrompt(){
-  const name = prompt("New category name:");
-  if(!name) return;
-  const id = "cat_" + Date.now();
-  state.categories.push({ id, name });
-  state.products[id] = state.products[id] || [];
-  saveState();
-  renderCategories();
-  selectCategory(id);
-}
-
-function renderCategories(){
-  const el = document.getElementById("categoriesList");
-  el.innerHTML = "";
-  if(state.categories.length === 0){
-    el.innerHTML = `<div class="small-muted">No categories yet.</div>`;
-    return;
-  }
-  state.categories.forEach(cat=>{
-    const btn = document.createElement("button");
-    btn.className = "export-btn";
-    btn.style.margin = "4px 4px 4px 0";
-    btn.textContent = cat.name;
-    btn.addEventListener("click", ()=> selectCategory(cat.id));
-    el.appendChild(btn);
-  });
-}
-
-let selectedCategory = null;
-function selectCategory(id){
-  selectedCategory = id;
-  const cat = state.categories.find(c=>c.id === id);
-  document.getElementById("selectedCategoryTitle").textContent = cat ? cat.name : "None";
-  document.getElementById("noCategoryMessage").style.display = cat ? "none" : "block";
-  document.getElementById("addProductFormWrap").classList.toggle("hidden", !getSession() || !getSession().isAdmin);
-  renderProducts();
-}
-
-/* Add product (admin only) */
-function handleAddProduct(e){
-  e.preventDefault();
-  const sess = getSession();
-  if(!sess || !sess.isAdmin){ alert("Admin only."); return; }
-  if(!selectedCategory){ alert("Select a category first."); return; }
-  const name = document.getElementById("prodName").value.trim();
-  const desc = document.getElementById("prodDesc").value.trim();
-  const cost = parseFloat(document.getElementById("prodCost").value);
-  const link = document.getElementById("prodLink").value.trim();
-  if(!name || !desc || isNaN(cost) || !link){ alert("Please provide correct product info."); return; }
-  const p = {
-    id: "prod_" + Date.now(),
-    name, desc, cost, link, createdAt: new Date().toISOString()
-  };
-  state.products[selectedCategory] = state.products[selectedCategory] || [];
-  state.products[selectedCategory].push(p);
-  saveState();
-  document.getElementById("addProductForm").reset();
-  renderProducts();
-}
-
-function hideAddProductForm(){
-  document.getElementById("addProductForm").reset();
-  document.getElementById("addProductFormWrap").classList.add("hidden");
-}
-
-function renderProducts(){
-  const grid = document.getElementById("productsGrid");
-  grid.innerHTML = "";
-  if(!selectedCategory){
-    // show a small selection grid (all categories preview)
-    state.categories.forEach(cat=>{
-      const wrap = document.createElement("div"); wrap.className = "card";
-      wrap.innerHTML = `<strong>${cat.name}</strong><div class="small-muted" style="margin-top:6px">${(state.products[cat.id]||[]).length} item(s)</div>`;
-      const showBtn = document.createElement("button"); showBtn.className="btn"; showBtn.textContent="Open";
-      showBtn.style.marginTop="8px";
-      showBtn.addEventListener("click", ()=> { selectCategory(cat.id); });
-      wrap.appendChild(showBtn);
-      grid.appendChild(wrap);
-    });
-    if(state.categories.length === 0){
-      grid.innerHTML = `<div class="small-muted">No categories — admin: create one.</div>`;
+    function loadState(){
+      try {
+        const raw = localStorage.getItem(APP_STORAGE_KEY);
+        if (!raw) return JSON.parse(JSON.stringify(defaults));
+        return Object.assign({}, defaults, JSON.parse(raw));
+      } catch (e) {
+        console.error("loadState", e);
+        return JSON.parse(JSON.stringify(defaults));
+      }
     }
-    return;
-  }
-  const prods = state.products[selectedCategory] || [];
-  if(prods.length === 0){
-    grid.innerHTML = `<div class="small-muted">No products in this category yet.</div>`;
-    return;
-  }
-  prods.forEach(p=>{
-    const card = document.createElement("div"); card.className = "card";
-    card.innerHTML = `<h3 class="product-title">${escapeHtml(p.name)}</h3>
-      <div class="small">${escapeHtml(p.desc)}</div>
-      <div class="meta" style="margin-top:8px"><div class="badge">Cost: ${Number(p.cost).toLocaleString()}</div><div class="small-muted">• added ${new Date(p.createdAt).toLocaleString()}</div></div>`;
-    const actions = document.createElement("div"); actions.className="actions";
-    const buy = document.createElement("a"); buy.className="btn"; buy.textContent="Open offer (FunPay)"; buy.href = p.link; buy.target="_blank";
-    actions.appendChild(buy);
-    const copy = document.createElement("button"); copy.className="export-btn"; copy.textContent="Copy link";
-    copy.addEventListener("click", ()=> {
-      navigator.clipboard?.writeText(p.link).then(()=> alert("Link copied to clipboard."), ()=> alert("Copy failed."));
-    });
-    actions.appendChild(copy);
+    function saveState(){
+      localStorage.setItem(APP_STORAGE_KEY, JSON.stringify(state));
+    }
 
-    // admin product actions
-    const sess = getSession();
-    if(sess && sess.isAdmin){
-      const del = document.createElement("button"); del.className="export-btn"; del.textContent="Delete";
-      del.addEventListener("click", ()=> {
-        if(!confirm("Delete product?")) return;
-        state.products[selectedCategory] = state.products[selectedCategory].filter(x=>x.id!==p.id);
-        saveState(); renderProducts();
+    const SESSION_KEY = "wshop_session";
+    function getSession(){
+      try { return JSON.parse(localStorage.getItem(SESSION_KEY)); } catch(e) { return null; }
+    }
+    function saveSession(sess){
+      localStorage.setItem(SESSION_KEY, JSON.stringify(sess));
+    }
+    function clearSession(){
+      localStorage.removeItem(SESSION_KEY);
+    }
+
+    function setUserUI(){
+      const sess = getSession();
+      const display = document.getElementById("user-display");
+      const adminBadge = document.getElementById("admin-badge");
+      const loginBtn = document.getElementById("loginBtn");
+      const logoutBtn = document.getElementById("logoutBtn");
+      if (sess && sess.username){
+        display.textContent = sess.username;
+        loginBtn.classList.add("hidden");
+        logoutBtn.classList.remove("hidden");
+        if (sess.isAdmin) {
+          adminBadge.classList.remove("hidden");
+        } else {
+          adminBadge.classList.add("hidden");
+        }
+      } else {
+        display.textContent = "not logged in";
+        loginBtn.classList.remove("hidden");
+        logoutBtn.classList.add("hidden");
+        adminBadge.classList.add("hidden");
+      }
+      renderAdminUI();
+    }
+
+    document.addEventListener("DOMContentLoaded", () => {
+      document.querySelectorAll(".tab").forEach(t => {
+        t.addEventListener("click", () => {
+          document.querySelectorAll(".tab").forEach(x => x.classList.remove("active"));
+          t.classList.add("active");
+          const target = t.getAttribute("data-tab");
+          document.querySelectorAll("main section").forEach(sec => sec.classList.remove("active"));
+          document.getElementById(target).classList.add("active");
+          if (target === "sales") renderProducts();
+          if (target === "reviews") renderReviews();
+          if (target === "contact") document.getElementById("ownerName").textContent = ADMIN_USERNAME;
+        });
       });
-      actions.appendChild(del);
+
+      document.getElementById("loginBtn").addEventListener("click", showLoginPrompt);
+      document.getElementById("logoutBtn").addEventListener("click", () => {
+        clearSession(); setUserUI();
+      });
+
+      document.getElementById("newCategoryBtn").addEventListener("click", createCategoryPrompt);
+      document.getElementById("addProductForm").addEventListener("submit", handleAddProduct);
+      document.getElementById("cancelAddProduct").addEventListener("click", hideAddProductForm);
+
+      document.getElementById("addReviewForm").addEventListener("submit", handleAddReview);
+      document.getElementById("clearReviews").addEventListener("click", () => {
+        if (!confirm("Clear ALL reviews? This cannot be undone on this device.")) return;
+        state.reviews = []; saveState(); renderReviews();
+      });
+
+      document.getElementById("exportData").addEventListener("click", exportJSON);
+      document.getElementById("importFile").addEventListener("change", handleImportFile);
+
+      document.getElementById("contactForm").addEventListener("submit", handleContactSubmit);
+      document.getElementById("copyContact").addEventListener("click", copyContactMsg);
+
+      setUserUI();
+      renderCategories();
+      renderProducts();
+      renderReviews();
+    });
+
+    function renderAdminUI(){
+      const sess = getSession();
+      const admin = sess && sess.isAdmin;
+      document.getElementById("newCategoryBtn").classList.toggle("hidden", !admin);
+      document.getElementById("addProductFormWrap").classList.toggle("hidden", !admin);
     }
 
-    card.appendChild(actions);
-    grid.appendChild(card);
-  });
-}
+    function showLoginPrompt(){
+      const username = prompt("Enter your display username:");
+      if (!username) return;
+      let isAdmin = false;
+      if (username.trim().toLowerCase() === ADMIN_USERNAME.toLowerCase()){
+        const secret = prompt("Enter admin secret (optional):");
+        isAdmin = true;
+      }
+      const sess = { username: username.trim(), isAdmin };
+      saveSession(sess);
+      setUserUI();
+      alert("Logged in as " + username + (isAdmin ? " (admin)" : ""));
+    }
 
-/* ----- Reviews ----- */
-function handleAddReview(e){
-  e.preventDefault();
-  const name = document.getElementById("reviewerName").value.trim();
-  const text = document.getElementById("reviewText").value.trim();
-  if(!name || !text) return;
-  state.reviews.unshift({ id:"rev_"+Date.now(), name, text, createdAt:new Date().toISOString()});
-  saveState();
-  document.getElementById("addReviewForm").reset();
-  renderReviews();
-}
+    function createCategoryPrompt(){
+      const name = prompt("New category name:");
+      if (!name) return;
+      const id = "cat_" + Date.now();
+      state.categories.push({ id, name });
+      state.products[id] = state.products[id] || [];
+      saveState();
+      renderCategories();
+      selectCategory(id);
+    }
 
-function renderReviews(){
-  const out = document.getElementById("reviewsList");
-  out.innerHTML = "";
-  if(state.reviews.length === 0){
-    out.innerHTML = `<div class="small-muted">No reviews yet.</div>`;
-    return;
-  }
-  state.reviews.forEach(r=>{
-    const c = document.createElement("div"); c.className="card review";
-    c.innerHTML = `<div style="display:flex;justify-content:space-between;align-items:center"><strong>${escapeHtml(r.name)}</strong><div class="small-muted">${new Date(r.createdAt).toLocaleString()}</div></div><div style="margin-top:8px">${escapeHtml(r.text)}</div>`;
-    out.appendChild(c);
-  });
-}
+    function renderCategories(){
+      const el = document.getElementById("categoriesList");
+      el.innerHTML = "";
+      if (state.categories.length === 0) {
+        el.innerHTML = `<div class="small-muted">No categories yet.</div>`;
+        return;
+      }
+      state.categories.forEach(cat => {
+        const btn = document.createElement("button");
+        btn.className = "btn";
+        btn.style.background = "transparent";
+        btn.style.border = "1px dashed rgba(255,255,255,0.06)";
+        btn.style.color = "var(--muted)";
+        btn.style.padding = "0.5rem 1rem";
+        btn.style.fontSize = "0.9rem";
+        btn.style.borderRadius = "var(--radius)";
+        btn.textContent = cat.name;
+        btn.addEventListener("click", () => selectCategory(cat.id));
+        el.appendChild(btn);
+      });
+    }
 
-/* ----- Contact ----- */
-function handleContactSubmit(e){
-  e.preventDefault();
-  const name = document.getElementById("contactName").value.trim();
-  const email = document.getElementById("contactEmail").value.trim();
-  const msg = document.getElementById("contactMessage").value.trim();
-  if(!name || !msg) { alert("Please enter your name and a message."); return; }
-  const subject = encodeURIComponent("W-Shop message from " + name);
-  let body = `From: ${name}\n`;
-  if(email) body += `Email: ${email}\n\n`;
-  body += msg;
-  const mailto = `mailto:${OWNER_EMAIL}?subject=${subject}&body=${encodeURIComponent(body)}`;
-  window.location.href = mailto; // opens user's mail client
-}
+    let selectedCategory = null;
+    function selectCategory(id){
+      selectedCategory = id;
+      const cat = state.categories.find(c => c.id === id);
+      document.getElementById("selectedCategoryTitle").textContent = cat ? cat.name : "None";
+      document.getElementById("noCategoryMessage").style.display = cat ? "none" : "block";
+      document.getElementById("addProductFormWrap").classList.toggle("hidden", !(getSession() && getSession().isAdmin));
+      renderProducts();
+    }
 
-function copyContactMsg(){
-  const name = document.getElementById("contactName").value.trim() || "Anonymous";
-  const email = document.getElementById("contactEmail").value.trim() ? ("Email: " + document.getElementById("contactEmail").value.trim() + "\n") : "";
-  const msg = document.getElementById("contactMessage").value.trim() || "";
-  const content = `To: ${OWNER_EMAIL}\nFrom: ${name}\n${email}\n${msg}`;
-  navigator.clipboard?.writeText(content).then(()=> alert("Message copied to clipboard."), ()=> alert("Copy failed."));
-}
+    function handleAddProduct(e){
+      e.preventDefault();
+      const sess = getSession();
+      if (!sess || !sess.isAdmin) { alert("Admin only."); return; }
+      if (!selectedCategory) { alert("Select a category first."); return; }
+      const name = document.getElementById("prodName").value.trim();
+      const desc = document.getElementById("prodDesc").value.trim();
+      const cost = parseFloat(document.getElementById("prodCost").value);
+      const link = document.getElementById("prodLink").value.trim();
+      if (!name || !desc || isNaN(cost) || !link) { alert("Please provide correct product info."); return; }
+      const p = { id: "prod_" + Date.now(), name, desc, cost, link, createdAt: new Date().toISOString() };
+      state.products[selectedCategory] = state.products[selectedCategory] || [];
+      state.products[selectedCategory].push(p);
+      saveState();
+      document.getElementById("addProductForm").reset();
+      renderProducts();
+    }
 
-/* ----- Export / Import JSON ----- */
-function exportJSON(){
-  const blob = new Blob([JSON.stringify(state,null,2)], {type:"application/json"});
-  const url = URL.createObjectURL(blob);
-  const a = document.createElement("a");
-  a.href = url; a.download = "wshop_backup_"+Date.now()+".json";
-  document.body.appendChild(a); a.click(); a.remove();
-  URL.revokeObjectURL(url);
-}
+    function hideAddProductForm(){
+      document.getElementById("addProductForm").reset();
+      document.getElementById("addProductFormWrap").classList.add("hidden");
+    }
 
-function handleImportFile(e){
-  const f = e.target.files[0];
-  if(!f) return;
-  const reader = new FileReader();
-  reader.onload = function(){ try{
-    const imported = JSON.parse(reader.result);
-    if(!confirm("Import will replace current shop data. Continue?")) return;
-    state = Object.assign({}, defaults, imported);
+    function renderProducts(){
+      const grid = document.getElementById("productsGrid");
+      grid.innerHTML = "";
+      if (!selectedCategory) {
+        state.categories.forEach(cat => {
+          const wrap = document.createElement("div");
+          wrap.className = "card";
+          wrap.innerHTML = `<strong>${cat.name}</strong><div class="small-muted" style="margin-top:0.5rem">${(state.products[cat.id]||[]).length} item(s)</div>`;
+          const showBtn = document.createElement("button");
+          showBtn.className = "btn";
+          showBtn.textContent = "Open";
+          showBtn.addEventListener("click", () => { selectCategory(cat.id); });
+          wrap.appendChild(showBtn);
+          grid.appendChild(wrap);
+        });
+        if (state.categories.length === 0) {
+          grid.innerHTML = `<div class="small-muted">No categories — admin: create one.</div>`;
+        }
+        return;
+      }
+      const prods = state.products[selectedCategory] || [];
+      if (prods.length === 0) {
+        grid.innerHTML = `<div class="small-muted">No products in this category yet.</div>`;
+        return;
+      }
+      prods.forEach(p => {
+        const card = document.createElement("div");
+        card.className = "card";
+        card.innerHTML = `<h3 class="product-title">${escapeHtml(p.name)}</h3>
+          <div class="small">${escapeHtml(p.desc)}</div>
+          <div class="meta"><div class="badge">Cost: ${Number(p.cost).toLocaleString()}</div><div class="small-muted">• added ${new Date(p.createdAt).toLocaleString()}</div></div>`;
+        const actions = document.createElement("div");
+        actions.className = "actions";
+        const buy = document.createElement("a");
+        buy.className = "btn";
+        buy.textContent = "Open offer";
+        buy.href = p.link;
+        buy.target = "_blank";
+        actions.appendChild(buy);
+        const copy = document.createElement("button");
+        copy.className = "btn";
+        copy.style.background = "transparent";
+        copy.style.border = "1px dashed rgba(255,255,255,0.06)";
+        copy.style.color = "var(--muted)";
+        copy.textContent = "Copy link";
+        copy.addEventListener("click", () => {
+          navigator.clipboard?.writeText(p.link)
+            .then(() => alert("Link copied to clipboard."))
+            .catch(() => alert("Copy failed."));
+        });
+        actions.appendChild(copy);
+        const sess = getSession();
+        if (sess && sess.isAdmin) {
+          const del = document.createElement("button");
+          del.className = "btn";
+          del.style.background = "transparent";
+          del.style.border = "1px dashed rgba(255,255,255,0.06)";
+          del.style.color = "var(--muted)";
+          del.textContent = "Delete";
+          del.addEventListener("click", () => {
+            if (!confirm("Delete product?")) return;
+            state.products[selectedCategory] = state.products[selectedCategory].filter(x => x.id !== p.id);
+            saveState(); renderProducts();
+          });
+          actions.appendChild(del);
+        }
+        card.appendChild(actions);
+        grid.appendChild(card);
+      });
+    }
+
+    function handleAddReview(e){
+      e.preventDefault();
+      const name = document.getElementById("reviewerName").value.trim();
+      const text = document.getElementById("reviewText").value.trim();
+      if (!name || !text) return;
+      state.reviews.unshift({ id: "rev_"+Date.now(), name, text, createdAt: new Date().toISOString() });
+      saveState();
+      document.getElementById("addReviewForm").reset();
+      renderReviews();
+    }
+
+    function renderReviews(){
+      const out = document.getElementById("reviewsList");
+      out.innerHTML = "";
+      if (state.reviews.length === 0) {
+        out.innerHTML = `<div class="small-muted">No reviews yet.</div>`;
+        return;
+      }
+      state.reviews.forEach(r => {
+        const c = document.createElement("div");
+        c.className = "card";
+        c.style.borderLeft = "3px solid rgba(96,201,246,0.15)";
+        c.style.paddingLeft = "0.75rem";
+        c.style.marginBottom = "0.75rem";
+        c.innerHTML = `<div style="display:flex;justify-content:space-between;align-items:center">
+          <strong>${escapeHtml(r.name)}</strong>
+          <div class="small-muted">${new Date(r.createdAt).toLocaleString()}</div>
+        </div>
+        <div style="margin-top:0.5rem">${escapeHtml(r.text)}</div>`;
+        out.appendChild(c);
+      });
+    }
+
+    function handleContactSubmit(e){
+      e.preventDefault();
+      const name = document.getElementById("contactName").value.trim();
+      const email = document.getElementById("contactEmail").value.trim();
+      const msg = document.getElementById("contactMessage").value.trim();
+      if (!name || !msg) { alert("Please enter your name and a message."); return; }
+      const subject = encodeURIComponent("W‑Shop message from " + name);
+      let body = `From: ${name}\n`;
+      if (email) body += `Email: ${email}\n\n`;
+      body += msg;
+      const mailto = `mailto:${OWNER_EMAIL}?subject=${subject}&body=${encodeURIComponent(body)}`;
+      window.location.href = mailto;
+    }
+
+    function copyContactMsg(){
+      const name = document.getElementById("contactName").value.trim() || "Anonymous";
+      const emailVal = document.getElementById("contactEmail").value.trim();
+      const email = emailVal ? ("Email: " + emailVal + "\n") : "";
+      const msg = document.getElementById("contactMessage").value.trim() || "";
+      const content = `To: ${OWNER_EMAIL}\nFrom: ${name}\n${email}\n${msg}`;
+      navigator.clipboard?.writeText(content)
+        .then(() => alert("Message copied to clipboard."))
+        .catch(() => alert("Copy failed."));
+    }
+
+    function exportJSON(){
+      const blob = new Blob([JSON.stringify(state, null, 2)], {type: "application/json"});
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement("a");
+      a.href = url;
+      a.download = "wshop_backup_"+Date.now()+".json";
+      document.body.appendChild(a);
+      a.click();
+      a.remove();
+      URL.revokeObjectURL(url);
+    }
+
+    function handleImportFile(e){
+      const f = e.target.files[0];
+      if (!f) return;
+      const reader = new FileReader();
+      reader.onload = function(){
+        try {
+          const imported = JSON.parse(reader.result);
+          if (!confirm("Import will replace current shop data. Continue?")) return;
+          state = Object.assign({}, defaults, imported);
+          saveState();
+          renderCategories(); renderProducts(); renderReviews();
+          alert("Import successful.");
+        } catch (err) {
+          alert("Invalid JSON");
+        }
+      };
+      reader.readAsText(f);
+    }
+
+    function escapeHtml(s) {
+      if (!s) return "";
+      return s.replace(/[&<>"']/g, ch => ({
+        '&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'" : "&#39;"
+      }[ch]));
+    }
+
     saveState();
-    renderCategories(); renderProducts(); renderReviews();
-    alert("Import successful.");
-  }catch(err){ alert("Invalid JSON"); }}
-  reader.readAsText(f);
-}
-
-/* ----- Utils ----- */
-function escapeHtml(s){
-  if(!s) return "";
-  return s.replace(/[&<>"']/g, ch => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":"&#39;"}[ch]));
-}
-
-/* Save initially (ensures defaults present) */
-saveState();
-</script>
+  </script>
 </body>
 </html>
+

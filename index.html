@@ -143,6 +143,14 @@
             background-color: #c1121f;
         }
         
+        .btn-warning {
+            background-color: var(--warning);
+        }
+        
+        .btn-warning:hover {
+            background-color: #e68900;
+        }
+        
         .color-picker {
             display: flex;
             gap: 10px;
@@ -258,10 +266,12 @@
             display: flex;
             gap: 10px;
             margin-top: 20px;
+            flex-wrap: wrap;
         }
         
         .action-buttons button {
             flex: 1;
+            min-width: 120px;
         }
         
         footer {
@@ -282,6 +292,111 @@
             border-left: 4px solid var(--primary);
         }
         
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.5);
+            z-index: 1000;
+            align-items: center;
+            justify-content: center;
+        }
+        
+        .modal-content {
+            background-color: white;
+            padding: 30px;
+            border-radius: 10px;
+            width: 90%;
+            max-width: 600px;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+        }
+        
+        .modal-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+        
+        .modal-title {
+            font-size: 1.5rem;
+            font-weight: 600;
+            color: var(--dark);
+        }
+        
+        .close-modal {
+            background: none;
+            border: none;
+            font-size: 1.5rem;
+            cursor: pointer;
+            color: #6c757d;
+            padding: 0;
+            width: auto;
+        }
+        
+        .close-modal:hover {
+            color: var(--danger);
+            transform: none;
+            background: none;
+        }
+        
+        .code-display {
+            background-color: #f8f9fa;
+            border: 1px solid #e9ecef;
+            border-radius: 5px;
+            padding: 15px;
+            font-family: monospace;
+            white-space: pre-wrap;
+            word-break: break-all;
+            max-height: 300px;
+            overflow-y: auto;
+            margin-bottom: 20px;
+        }
+        
+        .import-options {
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+        }
+        
+        .import-option {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+        
+        .file-drop-area {
+            border: 2px dashed #ddd;
+            border-radius: 5px;
+            padding: 25px;
+            text-align: center;
+            transition: all 0.3s;
+            cursor: pointer;
+        }
+        
+        .file-drop-area:hover, .file-drop-area.dragover {
+            border-color: var(--primary);
+            background-color: rgba(67, 97, 238, 0.05);
+        }
+        
+        .file-drop-area p {
+            margin-bottom: 10px;
+            color: #6c757d;
+        }
+        
+        .file-input {
+            display: none;
+        }
+        
+        .file-message {
+            font-size: 0.9rem;
+            color: #6c757d;
+            margin-top: 10px;
+        }
+        
         @media (max-width: 768px) {
             .main-content {
                 flex-direction: column;
@@ -290,6 +405,10 @@
             .controls, .chart-container {
                 min-width: 100%;
             }
+            
+            .action-buttons button {
+                min-width: 100px;
+            }
         }
     </style>
 </head>
@@ -297,7 +416,7 @@
     <div class="container">
         <header>
             <h1>Line Chart Creator</h1>
-            <p class="subtitle">Create, customize, and download beautiful line charts</p>
+            <p class="subtitle">Create, customize, and share beautiful line charts</p>
         </header>
         
         <div class="main-content">
@@ -349,6 +468,12 @@
                     <button id="save-chart" class="btn-success">
                         ↓ Save Chart
                     </button>
+                    <button id="export-code" class="btn-warning">
+                        📋 Export Code
+                    </button>
+                    <button id="import-code" class="btn-warning">
+                        📥 Import Code
+                    </button>
                     <button id="reset-chart" class="btn-danger">
                         ↺ Reset
                     </button>
@@ -361,8 +486,59 @@
         </div>
         
         <footer>
-            <p>Line Chart Creator &copy; 2023 | Create, customize and download beautiful line charts</p>
+            <p>Line Chart Creator &copy; 2023 | Create, customize and share beautiful line charts</p>
         </footer>
+    </div>
+
+    <!-- Export Code Modal -->
+    <div class="modal" id="export-modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2 class="modal-title">Export Chart Code</h2>
+                <button class="close-modal">&times;</button>
+            </div>
+            <p>Copy the code below to share your chart. You can import it later using the "Import Code" button.</p>
+            <div class="code-display" id="export-code-display"></div>
+            <div class="action-buttons">
+                <button id="copy-code" class="btn-success">Copy to Clipboard</button>
+                <button id="download-code" class="btn-success">Download as File</button>
+                <button class="close-modal">Close</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Import Code Modal -->
+    <div class="modal" id="import-modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2 class="modal-title">Import Chart Code</h2>
+                <button class="close-modal">&times;</button>
+            </div>
+            <p>Import a previously saved chart by uploading a file or pasting the code directly.</p>
+            
+            <div class="import-options">
+                <div class="import-option">
+                    <h3>Upload File</h3>
+                    <div class="file-drop-area" id="file-drop-area">
+                        <p>Drag & drop your chart code file here</p>
+                        <p>or</p>
+                        <button id="browse-files">Browse Files</button>
+                        <input type="file" id="file-input" class="file-input" accept=".txt,.json">
+                        <p class="file-message" id="file-message">No file selected</p>
+                    </div>
+                </div>
+                
+                <div class="import-option">
+                    <h3>Paste Code</h3>
+                    <textarea id="import-code-textarea" placeholder="Paste your chart code here..." rows="8"></textarea>
+                </div>
+            </div>
+            
+            <div class="action-buttons">
+                <button id="confirm-import" class="btn-success">Import Chart</button>
+                <button class="close-modal">Cancel</button>
+            </div>
+        </div>
     </div>
 
     <script>
@@ -502,6 +678,8 @@
             
             // Set up event listeners
             document.getElementById('save-chart').addEventListener('click', saveChart);
+            document.getElementById('export-code').addEventListener('click', exportCode);
+            document.getElementById('import-code').addEventListener('click', openImportModal);
             document.getElementById('reset-chart').addEventListener('click', resetChart);
             document.getElementById('add-data').addEventListener('click', addDataRow);
             
@@ -525,6 +703,12 @@
                     }
                 }
             });
+            
+            // Modal functionality
+            setupModals();
+            
+            // File import functionality
+            setupFileImport();
         };
         
         // Update chart based on user inputs
@@ -631,6 +815,218 @@
             initializeDataInputs();
             
             updateChart();
+        }
+        
+        // Export chart as code
+        function exportCode() {
+            // Collect all chart data
+            const chartData = {
+                title: document.getElementById('chart-title').value,
+                xAxisLabel: document.getElementById('x-axis-label').value,
+                yAxisLabel: document.getElementById('y-axis-label').value,
+                lineColor: document.querySelector('.color-option.active').getAttribute('data-color'),
+                data: []
+            };
+            
+            // Get data points
+            document.querySelectorAll('.data-row').forEach(row => {
+                const label = row.querySelector('.data-label').value;
+                const value = parseFloat(row.querySelector('.data-value').value);
+                
+                if (label && !isNaN(value)) {
+                    chartData.data.push({ label, value });
+                }
+            });
+            
+            // Convert to JSON string with formatting
+            const codeString = JSON.stringify(chartData, null, 2);
+            
+            // Display in modal
+            document.getElementById('export-code-display').textContent = codeString;
+            
+            // Show modal
+            document.getElementById('export-modal').style.display = 'flex';
+            
+            // Set up copy and download buttons
+            document.getElementById('copy-code').onclick = function() {
+                navigator.clipboard.writeText(codeString).then(() => {
+                    alert('Code copied to clipboard!');
+                }).catch(err => {
+                    console.error('Failed to copy: ', err);
+                    alert('Failed to copy code to clipboard');
+                });
+            };
+            
+            document.getElementById('download-code').onclick = function() {
+                const link = document.createElement('a');
+                const chartTitle = document.getElementById('chart-title').value || 'chart';
+                const fileName = chartTitle.toLowerCase().replace(/\s+/g, '-') + '-code.txt';
+                
+                link.download = fileName;
+                link.href = URL.createObjectURL(new Blob([codeString], { type: 'text/plain' }));
+                link.click();
+            };
+        }
+        
+        // Import chart from code
+        function openImportModal() {
+            // Clear previous inputs
+            document.getElementById('import-code-textarea').value = '';
+            document.getElementById('file-message').textContent = 'No file selected';
+            document.getElementById('file-input').value = '';
+            
+            // Show modal
+            document.getElementById('import-modal').style.display = 'flex';
+        }
+        
+        // Set up modals
+        function setupModals() {
+            // Close modals when clicking close button or outside
+            document.querySelectorAll('.close-modal').forEach(button => {
+                button.addEventListener('click', function() {
+                    document.querySelectorAll('.modal').forEach(modal => {
+                        modal.style.display = 'none';
+                    });
+                });
+            });
+            
+            // Close modals when clicking outside content
+            document.querySelectorAll('.modal').forEach(modal => {
+                modal.addEventListener('click', function(e) {
+                    if (e.target === modal) {
+                        modal.style.display = 'none';
+                    }
+                });
+            });
+            
+            // Set up import confirmation
+            document.getElementById('confirm-import').addEventListener('click', importChart);
+        }
+        
+        // Set up file import functionality
+        function setupFileImport() {
+            const fileDropArea = document.getElementById('file-drop-area');
+            const fileInput = document.getElementById('file-input');
+            const fileMessage = document.getElementById('file-message');
+            const browseFiles = document.getElementById('browse-files');
+            
+            // Click on area to trigger file input
+            fileDropArea.addEventListener('click', function() {
+                fileInput.click();
+            });
+            
+            browseFiles.addEventListener('click', function(e) {
+                e.stopPropagation(); // Prevent triggering the file drop area click
+                fileInput.click();
+            });
+            
+            // Handle file selection
+            fileInput.addEventListener('change', function() {
+                if (this.files.length > 0) {
+                    const file = this.files[0];
+                    fileMessage.textContent = `Selected: ${file.name}`;
+                    
+                    // Read the file
+                    const reader = new FileReader();
+                    reader.onload = function(e) {
+                        document.getElementById('import-code-textarea').value = e.target.result;
+                    };
+                    reader.readAsText(file);
+                }
+            });
+            
+            // Drag and drop functionality
+            fileDropArea.addEventListener('dragover', function(e) {
+                e.preventDefault();
+                fileDropArea.classList.add('dragover');
+            });
+            
+            fileDropArea.addEventListener('dragleave', function() {
+                fileDropArea.classList.remove('dragover');
+            });
+            
+            fileDropArea.addEventListener('drop', function(e) {
+                e.preventDefault();
+                fileDropArea.classList.remove('dragover');
+                
+                if (e.dataTransfer.files.length > 0) {
+                    const file = e.dataTransfer.files[0];
+                    fileInput.files = e.dataTransfer.files;
+                    fileMessage.textContent = `Selected: ${file.name}`;
+                    
+                    // Read the file
+                    const reader = new FileReader();
+                    reader.onload = function(e) {
+                        document.getElementById('import-code-textarea').value = e.target.result;
+                    };
+                    reader.readAsText(file);
+                }
+            });
+        }
+        
+        // Import chart from code
+        function importChart() {
+            const codeText = document.getElementById('import-code-textarea').value.trim();
+            
+            if (!codeText) {
+                alert('Please provide chart code to import.');
+                return;
+            }
+            
+            try {
+                const chartData = JSON.parse(codeText);
+                
+                // Validate the imported data
+                if (!chartData.title || !chartData.xAxisLabel || !chartData.yAxisLabel || 
+                    !chartData.lineColor || !chartData.data || !Array.isArray(chartData.data)) {
+                    throw new Error('Invalid chart data format');
+                }
+                
+                // Apply the imported data
+                document.getElementById('chart-title').value = chartData.title;
+                document.getElementById('x-axis-label').value = chartData.xAxisLabel;
+                document.getElementById('y-axis-label').value = chartData.yAxisLabel;
+                
+                // Set the color
+                document.querySelectorAll('.color-option').forEach(opt => opt.classList.remove('active'));
+                const colorOption = document.querySelector(`.color-option[data-color="${chartData.lineColor}"]`);
+                if (colorOption) {
+                    colorOption.classList.add('active');
+                } else {
+                    // If color doesn't exist, use the first one
+                    document.querySelector('.color-option').classList.add('active');
+                }
+                
+                // Clear existing data inputs
+                const dataInputs = document.getElementById('data-inputs');
+                dataInputs.innerHTML = '';
+                
+                // Add new data rows
+                chartData.data.forEach(item => {
+                    const newRow = document.createElement('div');
+                    newRow.className = 'data-row';
+                    newRow.innerHTML = `
+                        <input type="text" class="data-label" placeholder="Label" value="${item.label}">
+                        <input type="number" class="data-value" placeholder="Value" value="${item.value}">
+                        <button class="remove-data">×</button>
+                    `;
+                    dataInputs.appendChild(newRow);
+                });
+                
+                // Reattach event listeners
+                attachInputListeners();
+                
+                // Update the chart
+                updateChart();
+                
+                // Close the modal
+                document.getElementById('import-modal').style.display = 'none';
+                
+                alert('Chart imported successfully!');
+            } catch (error) {
+                console.error('Import error:', error);
+                alert('Failed to import chart. Please check that the code is valid.');
+            }
         }
         
         // Helper function to convert hex to rgba

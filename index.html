@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Line Chart Creator</title>
+    <title>Multi-Layer Line Chart Creator</title>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <style>
         :root {
@@ -32,7 +32,7 @@
         }
         
         .container {
-            max-width: 1200px;
+            max-width: 1400px;
             margin: 0 auto;
         }
         
@@ -64,7 +64,7 @@
         
         .controls {
             flex: 1;
-            min-width: 300px;
+            min-width: 350px;
             background: white;
             padding: 25px;
             border-radius: 10px;
@@ -73,7 +73,7 @@
         
         .chart-container {
             flex: 2;
-            min-width: 500px;
+            min-width: 600px;
             background: white;
             padding: 25px;
             border-radius: 10px;
@@ -149,6 +149,14 @@
         
         .btn-warning:hover {
             background-color: #e68900;
+        }
+        
+        .btn-info {
+            background-color: var(--accent);
+        }
+        
+        .btn-info:hover {
+            background-color: #3aa8c9;
         }
         
         .color-picker {
@@ -397,6 +405,108 @@
             margin-top: 10px;
         }
         
+        .layer-controls {
+            margin-top: 20px;
+            border: 1px solid #e0e0e0;
+            border-radius: 5px;
+            padding: 15px;
+        }
+        
+        .layer-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 15px;
+        }
+        
+        .layer-title {
+            font-weight: 600;
+            font-size: 1.1rem;
+        }
+        
+        .layer-list {
+            max-height: 300px;
+            overflow-y: auto;
+        }
+        
+        .layer-item {
+            display: flex;
+            align-items: center;
+            padding: 10px;
+            border-radius: 5px;
+            margin-bottom: 10px;
+            background-color: #f8f9fa;
+            transition: all 0.3s;
+        }
+        
+        .layer-item:hover {
+            background-color: #e9ecef;
+        }
+        
+        .layer-item.active {
+            background-color: rgba(67, 97, 238, 0.1);
+            border-left: 4px solid var(--primary);
+        }
+        
+        .layer-color {
+            width: 20px;
+            height: 20px;
+            border-radius: 50%;
+            margin-right: 10px;
+        }
+        
+        .layer-name {
+            flex: 1;
+            font-weight: 500;
+        }
+        
+        .layer-actions {
+            display: flex;
+            gap: 5px;
+        }
+        
+        .layer-toggle {
+            background: none;
+            border: none;
+            cursor: pointer;
+            font-size: 1.2rem;
+            color: #6c757d;
+            padding: 5px;
+            width: auto;
+        }
+        
+        .layer-toggle:hover {
+            color: var(--primary);
+            transform: none;
+            background: none;
+        }
+        
+        .layer-remove {
+            background: none;
+            border: none;
+            cursor: pointer;
+            font-size: 1.2rem;
+            color: #6c757d;
+            padding: 5px;
+            width: auto;
+        }
+        
+        .layer-remove:hover {
+            color: var(--danger);
+            transform: none;
+            background: none;
+        }
+        
+        .visibility-controls {
+            display: flex;
+            gap: 10px;
+            margin-top: 15px;
+        }
+        
+        .visibility-controls button {
+            flex: 1;
+        }
+        
         @media (max-width: 768px) {
             .main-content {
                 flex-direction: column;
@@ -415,8 +525,8 @@
 <body>
     <div class="container">
         <header>
-            <h1>Line Chart Creator</h1>
-            <p class="subtitle">Create, customize, and share beautiful line charts</p>
+            <h1>Multi-Layer Line Chart Creator</h1>
+            <p class="subtitle">Create, customize, and share beautiful multi-line charts</p>
         </header>
         
         <div class="main-content">
@@ -440,28 +550,47 @@
                     <input type="text" id="y-axis-label" placeholder="Enter Y-axis label" value="Revenue ($)">
                 </div>
                 
-                <div class="form-group">
-                    <label>Line Color</label>
-                    <div class="color-picker">
-                        <div class="color-option active" style="background-color: #4361ee;" data-color="#4361ee"></div>
-                        <div class="color-option" style="background-color: #e63946;" data-color="#e63946"></div>
-                        <div class="color-option" style="background-color: #2a9d8f;" data-color="#2a9d8f"></div>
-                        <div class="color-option" style="background-color: #e9c46a;" data-color="#e9c46a"></div>
-                        <div class="color-option" style="background-color: #9d4edd;" data-color="#9d4edd"></div>
+                <div class="layer-controls">
+                    <div class="layer-header">
+                        <div class="layer-title">Line Layers</div>
+                        <button id="add-layer" class="btn-success">+ Add Layer</button>
+                    </div>
+                    
+                    <div class="layer-list" id="layer-list">
+                        <!-- Layers will be added here dynamically -->
+                    </div>
+                    
+                    <div class="visibility-controls">
+                        <button id="show-all-layers" class="btn-info">Show All</button>
+                        <button id="hide-all-layers" class="btn-info">Hide All</button>
                     </div>
                 </div>
                 
-                <div class="form-group">
-                    <label>Chart Data</label>
-                    <div class="data-header">
-                        <div class="label-header">Label (Click to edit)</div>
-                        <div class="value-header">Value (Click to edit)</div>
-                        <div style="width: 35px;"></div>
+                <div class="form-group" id="active-layer-controls">
+                    <label>Active Layer: <span id="active-layer-name">Layer 1</span></label>
+                    <div class="form-group">
+                        <label>Line Color</label>
+                        <div class="color-picker">
+                            <div class="color-option active" style="background-color: #4361ee;" data-color="#4361ee"></div>
+                            <div class="color-option" style="background-color: #e63946;" data-color="#e63946"></div>
+                            <div class="color-option" style="background-color: #2a9d8f;" data-color="#2a9d8f"></div>
+                            <div class="color-option" style="background-color: #e9c46a;" data-color="#e9c46a"></div>
+                            <div class="color-option" style="background-color: #9d4edd;" data-color="#9d4edd"></div>
+                        </div>
                     </div>
-                    <div class="data-inputs" id="data-inputs">
-                        <!-- Data rows will be generated here -->
+                    
+                    <div class="form-group">
+                        <label>Layer Data</label>
+                        <div class="data-header">
+                            <div class="label-header">Label (Click to edit)</div>
+                            <div class="value-header">Value (Click to edit)</div>
+                            <div style="width: 35px;"></div>
+                        </div>
+                        <div class="data-inputs" id="data-inputs">
+                            <!-- Data rows will be generated here -->
+                        </div>
+                        <button id="add-data" style="margin-top: 10px; width: 100%;">+ Add Data Point</button>
                     </div>
-                    <button id="add-data" style="margin-top: 10px; width: 100%;">+ Add Data Point</button>
                 </div>
                 
                 <div class="action-buttons">
@@ -486,7 +615,7 @@
         </div>
         
         <footer>
-            <p>Line Chart Creator &copy; 2023 | Create, customize and share beautiful line charts</p>
+            <p>Multi-Layer Line Chart Creator &copy; 2023 | Create, customize and share beautiful multi-line charts</p>
         </footer>
     </div>
 
@@ -544,30 +673,35 @@
     <script>
         // Initialize chart
         let myChart;
+        let layers = [];
+        let activeLayerId = 1;
+        let nextLayerId = 2;
         
-        // Default data
-        const defaultData = {
-            labels: ['Jan', 'Feb', 'Mar', 'Apr', 'May'],
-            datasets: [{
-                label: 'Dataset 1',
-                data: [1200, 1900, 1500, 2200, 1800],
-                backgroundColor: 'rgba(67, 97, 238, 0.1)',
-                borderColor: '#4361ee',
-                borderWidth: 3,
-                tension: 0.2,
-                fill: true,
-                pointBackgroundColor: '#4361ee',
-                pointBorderColor: '#ffffff',
-                pointBorderWidth: 2,
-                pointRadius: 5,
-                pointHoverRadius: 7
-            }]
+        // Default data for first layer
+        const defaultLayerData = {
+            id: 1,
+            name: 'Layer 1',
+            color: '#4361ee',
+            visible: true,
+            dataPoints: [
+                { label: 'Jan', value: 1200 },
+                { label: 'Feb', value: 1900 },
+                { label: 'Mar', value: 1500 },
+                { label: 'Apr', value: 2200 },
+                { label: 'May', value: 1800 }
+            ]
         };
+        
+        // Initialize layers array
+        layers.push(defaultLayerData);
         
         // Chart configuration
         const config = {
             type: 'line',
-            data: defaultData,
+            data: {
+                labels: ['Jan', 'Feb', 'Mar', 'Apr', 'May'],
+                datasets: []
+            },
             options: {
                 responsive: true,
                 maintainAspectRatio: false,
@@ -585,7 +719,8 @@
                         }
                     },
                     legend: {
-                        display: false
+                        display: true,
+                        position: 'top',
                     },
                     tooltip: {
                         backgroundColor: 'rgba(0, 0, 0, 0.7)',
@@ -637,30 +772,33 @@
             }
         };
         
-        // Initialize the data inputs
-        function initializeDataInputs() {
+        // Initialize the data inputs for a layer
+        function initializeDataInputs(layerId) {
             const dataInputs = document.getElementById('data-inputs');
             dataInputs.innerHTML = '';
             
-            defaultData.labels.forEach((label, index) => {
+            const layer = layers.find(l => l.id === layerId);
+            if (!layer) return;
+            
+            layer.dataPoints.forEach((point, index) => {
                 const newRow = document.createElement('div');
                 newRow.className = 'data-row';
                 newRow.innerHTML = `
-                    <input type="text" class="data-label" placeholder="Label" value="${label}">
-                    <input type="number" class="data-value" placeholder="Value" value="${defaultData.datasets[0].data[index]}">
+                    <input type="text" class="data-label" placeholder="Label" value="${point.label}">
+                    <input type="number" class="data-value" placeholder="Value" value="${point.value}">
                     <button class="remove-data">×</button>
                 `;
                 dataInputs.appendChild(newRow);
             });
             
             // Add event listeners to the new inputs
-            attachInputListeners();
+            attachInputListeners(layerId);
         }
         
-        // Attach event listeners to all inputs
-        function attachInputListeners() {
+        // Attach event listeners to all inputs for a layer
+        function attachInputListeners(layerId) {
             document.querySelectorAll('.data-label, .data-value').forEach(input => {
-                input.addEventListener('input', updateChart);
+                input.addEventListener('input', () => updateLayerData(layerId));
             });
             
             document.getElementById('chart-title').addEventListener('input', updateChart);
@@ -668,13 +806,35 @@
             document.getElementById('y-axis-label').addEventListener('input', updateChart);
         }
         
+        // Update layer data from inputs
+        function updateLayerData(layerId) {
+            const layer = layers.find(l => l.id === layerId);
+            if (!layer) return;
+            
+            layer.dataPoints = [];
+            
+            document.querySelectorAll('.data-row').forEach(row => {
+                const label = row.querySelector('.data-label').value;
+                const value = parseFloat(row.querySelector('.data-value').value);
+                
+                if (label && !isNaN(value)) {
+                    layer.dataPoints.push({ label, value });
+                }
+            });
+            
+            updateChart();
+        }
+        
         // Initialize chart and data
         window.onload = function() {
             const ctx = document.getElementById('myChart').getContext('2d');
             myChart = new Chart(ctx, config);
             
-            // Initialize data inputs
-            initializeDataInputs();
+            // Initialize data inputs for the first layer
+            initializeDataInputs(activeLayerId);
+            
+            // Render layer list
+            renderLayerList();
             
             // Set up event listeners
             document.getElementById('save-chart').addEventListener('click', saveChart);
@@ -682,13 +842,21 @@
             document.getElementById('import-code').addEventListener('click', openImportModal);
             document.getElementById('reset-chart').addEventListener('click', resetChart);
             document.getElementById('add-data').addEventListener('click', addDataRow);
+            document.getElementById('add-layer').addEventListener('click', addLayer);
+            document.getElementById('show-all-layers').addEventListener('click', showAllLayers);
+            document.getElementById('hide-all-layers').addEventListener('click', hideAllLayers);
             
             // Color scheme selection
             document.querySelectorAll('.color-option').forEach(option => {
                 option.addEventListener('click', function() {
                     document.querySelectorAll('.color-option').forEach(opt => opt.classList.remove('active'));
                     this.classList.add('active');
-                    updateChart();
+                    
+                    const activeLayer = layers.find(l => l.id === activeLayerId);
+                    if (activeLayer) {
+                        activeLayer.color = this.getAttribute('data-color');
+                        updateChart();
+                    }
                 });
             });
             
@@ -697,7 +865,7 @@
                 if (e.target.classList.contains('remove-data')) {
                     if (document.querySelectorAll('.data-row').length > 1) {
                         e.target.closest('.data-row').remove();
-                        updateChart();
+                        updateLayerData(activeLayerId);
                     } else {
                         alert('You need at least one data point!');
                     }
@@ -709,37 +877,44 @@
             
             // File import functionality
             setupFileImport();
+            
+            // Initial chart update
+            updateChart();
         };
         
-        // Update chart based on user inputs
+        // Update chart based on all layers
         function updateChart() {
             const chartTitle = document.getElementById('chart-title').value;
             const xAxisLabel = document.getElementById('x-axis-label').value;
             const yAxisLabel = document.getElementById('y-axis-label').value;
             
-            // Get data from inputs
-            const labels = [];
-            const data = [];
+            // Get all labels from the first layer (assuming all layers have same labels)
+            const labels = layers[0]?.dataPoints.map(point => point.label) || [];
             
-            document.querySelectorAll('.data-row').forEach(row => {
-                const label = row.querySelector('.data-label').value;
-                const value = parseFloat(row.querySelector('.data-value').value);
+            // Update datasets for each layer
+            const datasets = layers.map(layer => {
+                const data = layer.dataPoints.map(point => point.value);
                 
-                if (label && !isNaN(value)) {
-                    labels.push(label);
-                    data.push(value);
-                }
+                return {
+                    label: layer.name,
+                    data: data,
+                    backgroundColor: hexToRgba(layer.color, 0.1),
+                    borderColor: layer.color,
+                    borderWidth: 3,
+                    tension: 0.2,
+                    fill: false,
+                    pointBackgroundColor: layer.color,
+                    pointBorderColor: '#ffffff',
+                    pointBorderWidth: 2,
+                    pointRadius: 5,
+                    pointHoverRadius: 7,
+                    hidden: !layer.visible
+                };
             });
-            
-            // Get selected color
-            const selectedColor = document.querySelector('.color-option.active').getAttribute('data-color');
             
             // Update chart configuration
             myChart.config.data.labels = labels;
-            myChart.config.data.datasets[0].data = data;
-            myChart.config.data.datasets[0].borderColor = selectedColor;
-            myChart.config.data.datasets[0].backgroundColor = hexToRgba(selectedColor, 0.1);
-            myChart.config.data.datasets[0].pointBackgroundColor = selectedColor;
+            myChart.config.data.datasets = datasets;
             myChart.config.options.plugins.title.text = chartTitle;
             
             // Update axis labels
@@ -750,7 +925,7 @@
             myChart.update();
         }
         
-        // Add new data row
+        // Add new data row to active layer
         function addDataRow() {
             const dataInputs = document.getElementById('data-inputs');
             const newRow = document.createElement('div');
@@ -780,10 +955,141 @@
             newRow.querySelector('.data-value').focus();
             
             // Add event listener to the new inputs
-            newRow.querySelector('.data-label').addEventListener('input', updateChart);
-            newRow.querySelector('.data-value').addEventListener('input', updateChart);
+            newRow.querySelector('.data-label').addEventListener('input', () => updateLayerData(activeLayerId));
+            newRow.querySelector('.data-value').addEventListener('input', () => updateLayerData(activeLayerId));
+            
+            updateLayerData(activeLayerId);
+        }
+        
+        // Add a new layer
+        function addLayer() {
+            const newLayerId = nextLayerId++;
+            const colorOptions = ['#4361ee', '#e63946', '#2a9d8f', '#e9c46a', '#9d4edd'];
+            const newColor = colorOptions[(newLayerId - 1) % colorOptions.length];
+            
+            const newLayer = {
+                id: newLayerId,
+                name: `Layer ${newLayerId}`,
+                color: newColor,
+                visible: true,
+                dataPoints: [
+                    { label: 'Jan', value: 0 },
+                    { label: 'Feb', value: 0 },
+                    { label: 'Mar', value: 0 },
+                    { label: 'Apr', value: 0 },
+                    { label: 'May', value: 0 }
+                ]
+            };
+            
+            layers.push(newLayer);
+            renderLayerList();
+            setActiveLayer(newLayerId);
+            updateChart();
+        }
+        
+        // Remove a layer
+        function removeLayer(layerId) {
+            if (layers.length <= 1) {
+                alert('You need at least one layer!');
+                return;
+            }
+            
+            layers = layers.filter(l => l.id !== layerId);
+            renderLayerList();
+            
+            // If we removed the active layer, set a new active layer
+            if (activeLayerId === layerId) {
+                setActiveLayer(layers[0].id);
+            }
             
             updateChart();
+        }
+        
+        // Toggle layer visibility
+        function toggleLayerVisibility(layerId) {
+            const layer = layers.find(l => l.id === layerId);
+            if (layer) {
+                layer.visible = !layer.visible;
+                renderLayerList();
+                updateChart();
+            }
+        }
+        
+        // Set active layer
+        function setActiveLayer(layerId) {
+            activeLayerId = layerId;
+            const activeLayer = layers.find(l => l.id === layerId);
+            
+            if (activeLayer) {
+                document.getElementById('active-layer-name').textContent = activeLayer.name;
+                
+                // Update color picker
+                document.querySelectorAll('.color-option').forEach(opt => {
+                    opt.classList.remove('active');
+                    if (opt.getAttribute('data-color') === activeLayer.color) {
+                        opt.classList.add('active');
+                    }
+                });
+                
+                // Update data inputs
+                initializeDataInputs(layerId);
+            }
+            
+            renderLayerList();
+        }
+        
+        // Show all layers
+        function showAllLayers() {
+            layers.forEach(layer => {
+                layer.visible = true;
+            });
+            renderLayerList();
+            updateChart();
+        }
+        
+        // Hide all layers
+        function hideAllLayers() {
+            layers.forEach(layer => {
+                layer.visible = false;
+            });
+            renderLayerList();
+            updateChart();
+        }
+        
+        // Render the layer list
+        function renderLayerList() {
+            const layerList = document.getElementById('layer-list');
+            layerList.innerHTML = '';
+            
+            layers.forEach(layer => {
+                const layerItem = document.createElement('div');
+                layerItem.className = `layer-item ${layer.id === activeLayerId ? 'active' : ''}`;
+                layerItem.innerHTML = `
+                    <div class="layer-color" style="background-color: ${layer.color};"></div>
+                    <div class="layer-name">${layer.name}</div>
+                    <div class="layer-actions">
+                        <button class="layer-toggle">${layer.visible ? '👁️' : '👁️‍🗨️'}</button>
+                        <button class="layer-remove">🗑️</button>
+                    </div>
+                `;
+                
+                // Add event listeners
+                layerItem.querySelector('.layer-toggle').addEventListener('click', (e) => {
+                    e.stopPropagation();
+                    toggleLayerVisibility(layer.id);
+                });
+                
+                layerItem.querySelector('.layer-remove').addEventListener('click', (e) => {
+                    e.stopPropagation();
+                    removeLayer(layer.id);
+                });
+                
+                layerItem.addEventListener('click', () => {
+                    setActiveLayer(layer.id);
+                });
+                
+                layerList.appendChild(layerItem);
+            });
         }
         
         // Save chart as image
@@ -807,12 +1113,18 @@
             document.getElementById('x-axis-label').value = 'Months';
             document.getElementById('y-axis-label').value = 'Revenue ($)';
             
+            // Reset layers
+            layers = [defaultLayerData];
+            nextLayerId = 2;
+            activeLayerId = 1;
+            
             // Reset color scheme
             document.querySelectorAll('.color-option').forEach(opt => opt.classList.remove('active'));
             document.querySelector('.color-option[data-color="#4361ee"]').classList.add('active');
             
             // Reset data inputs
-            initializeDataInputs();
+            renderLayerList();
+            setActiveLayer(activeLayerId);
             
             updateChart();
         }
@@ -824,19 +1136,8 @@
                 title: document.getElementById('chart-title').value,
                 xAxisLabel: document.getElementById('x-axis-label').value,
                 yAxisLabel: document.getElementById('y-axis-label').value,
-                lineColor: document.querySelector('.color-option.active').getAttribute('data-color'),
-                data: []
+                layers: layers
             };
-            
-            // Get data points
-            document.querySelectorAll('.data-row').forEach(row => {
-                const label = row.querySelector('.data-label').value;
-                const value = parseFloat(row.querySelector('.data-value').value);
-                
-                if (label && !isNaN(value)) {
-                    chartData.data.push({ label, value });
-                }
-            });
             
             // Convert to JSON string with formatting
             const codeString = JSON.stringify(chartData, null, 2);
@@ -978,7 +1279,7 @@
                 
                 // Validate the imported data
                 if (!chartData.title || !chartData.xAxisLabel || !chartData.yAxisLabel || 
-                    !chartData.lineColor || !chartData.data || !Array.isArray(chartData.data)) {
+                    !chartData.layers || !Array.isArray(chartData.layers)) {
                     throw new Error('Invalid chart data format');
                 }
                 
@@ -987,34 +1288,27 @@
                 document.getElementById('x-axis-label').value = chartData.xAxisLabel;
                 document.getElementById('y-axis-label').value = chartData.yAxisLabel;
                 
-                // Set the color
+                // Set the layers
+                layers = chartData.layers;
+                nextLayerId = Math.max(...layers.map(l => l.id)) + 1;
+                activeLayerId = layers[0].id;
+                
+                // Reset color scheme
                 document.querySelectorAll('.color-option').forEach(opt => opt.classList.remove('active'));
-                const colorOption = document.querySelector(`.color-option[data-color="${chartData.lineColor}"]`);
-                if (colorOption) {
-                    colorOption.classList.add('active');
-                } else {
-                    // If color doesn't exist, use the first one
-                    document.querySelector('.color-option').classList.add('active');
+                const activeLayer = layers.find(l => l.id === activeLayerId);
+                if (activeLayer) {
+                    const colorOption = document.querySelector(`.color-option[data-color="${activeLayer.color}"]`);
+                    if (colorOption) {
+                        colorOption.classList.add('active');
+                    } else {
+                        // If color doesn't exist, use the first one
+                        document.querySelector('.color-option').classList.add('active');
+                    }
                 }
                 
-                // Clear existing data inputs
-                const dataInputs = document.getElementById('data-inputs');
-                dataInputs.innerHTML = '';
-                
-                // Add new data rows
-                chartData.data.forEach(item => {
-                    const newRow = document.createElement('div');
-                    newRow.className = 'data-row';
-                    newRow.innerHTML = `
-                        <input type="text" class="data-label" placeholder="Label" value="${item.label}">
-                        <input type="number" class="data-value" placeholder="Value" value="${item.value}">
-                        <button class="remove-data">×</button>
-                    `;
-                    dataInputs.appendChild(newRow);
-                });
-                
-                // Reattach event listeners
-                attachInputListeners();
+                // Reset data inputs
+                renderLayerList();
+                setActiveLayer(activeLayerId);
                 
                 // Update the chart
                 updateChart();
